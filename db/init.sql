@@ -74,8 +74,8 @@ CREATE TABLE questions (
     question_template_id INT,
     user_id INT,
     generated_question_text VARCHAR(255) NOT NULL,
-    FOREIGN KEY (question_template_id) REFERENCES question_templates(template_id),
-    FOREIGN KEY (user_id) REFERENCES users(user_id)
+    -- FOREIGN KEY (question_template_id) REFERENCES question_templates(template_id),
+    -- FOREIGN KEY (user_id) REFERENCES users(user_id)
 );
 
 CREATE TABLE user_progress (
@@ -87,9 +87,9 @@ CREATE TABLE user_progress (
     bonus_points_earned INT,
     timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (user_id, question_id, timestamp),
-    FOREIGN KEY (user_id) REFERENCES users(user_id),
-    FOREIGN KEY (question_id) REFERENCES questions(question_id),
-    FOREIGN KEY (answer_id) REFERENCES answers(answer_id)
+    -- FOREIGN KEY (user_id) REFERENCES users(user_id),
+    -- FOREIGN KEY (question_id) REFERENCES questions(question_id),
+    -- FOREIGN KEY (answer_id) REFERENCES answers(answer_id)
 );
 
 CREATE TABLE answers (
@@ -98,5 +98,5 @@ CREATE TABLE answers (
     answer_text VARCHAR(255),
     is_correct BOOLEAN NOT NULL,
     points INT NOT NULL DEFAULT 0,
-    FOREIGN KEY (question_id) REFERENCES questions(question_id)
+    -- FOREIGN KEY (question_id) REFERENCES questions(question_id)
 );
