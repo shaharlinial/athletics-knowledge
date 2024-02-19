@@ -42,6 +42,14 @@ class MySQLConnection:
         except Error as e:
             print(f"Error executing query: {e}")
 
+    def executemany(self, query, values):
+        try:
+            cursor = self.connection.cursor()
+            cursor.executemany(query, values)
+            self.connection.commit()
+            print("Query executed successfully")
+        except Error as e:
+            print(f"Error executing query: {e}")
     def fetch_data(self, query):
         try:
             cursor = self.connection.cursor()
@@ -165,34 +173,36 @@ data_importer = DataImporter(csv_path)
 
 if data_importer.table is not None:
     try:
-        # Insert data into the athletes table
-        for index, row in data_importer.table.iterrows():
-            athlete_query = f"INSERT INTO athletes (athlete_id, name, sex) VALUES ({row['ID']}, '{row['Name']}', '{row['Sex']}')"
-            mysql_connection.execute_query(athlete_query)
+        # Insert data into the athletes table in bulk
+        athlete_values = [(row['ID'], row['Name'], row['Sex']) for index, row in data_importer.table.iterrows()]
+        # remove duplicates
+        athlete_values = list(set(athlete_values))
+        athlete_query = "INSERT INTO athletes (athlete_id, name, sex) VALUES (%s, %s, %s)"
+        mysql_connection.executemany(athlete_query, athlete_values)
 
-        # Insert data into the teams table
-        for index, row in data_importer.table.iterrows():
-            team_query = f"INSERT INTO teams (team_id, team_name, NOC) VALUES ({row['ID']}, '{row['Team']}', '{row['NOC']}')"
-            mysql_connection.execute_query(team_query)
+        # Insert data into the teams table in bulk
+        team_values = [(row['ID'], row['Team'], row['NOC']) for index, row in data_importer.table.iterrows()]
+        team_query = "INSERT INTO teams (team_id, team_name, NOC) VALUES (%s, %s, %s)"
+        mysql_connection.executemany(team_query, team_values)
 
-        # Insert data into the olympics table
-        for index, row in data_importer.table.iterrows():
-            olympics_query = f"INSERT INTO olympics (olympics_id, games, year, season, city) VALUES ({row['ID']}, '{row['Games']}', {row['Year']}, '{row['Season']}', '{row['City']}')"
-            mysql_connection.execute_query(olympics_query)
+        # Insert data into the olympics table in bulk
+        olympics_values = [(row['ID'], row['Games'], row['Year'], row['Season'], row['City']) for index, row in data_importer.table.iterrows()]
+        olympics_query = "INSERT INTO olympics (olympics_id, games, year, season, city) VALUES (%s, %s, %s, %s, %s)"
+        mysql_connection.executemany(olympics_query, olympics_values)
 
-        # Insert data into the events table
-        for index, row in data_importer.table.iterrows():
-            events_query = f"INSERT INTO events (event_id, olympics_id, sport, event_name) VALUES ({row['ID']}, {row['ID']}, '{row['Sport']}', '{row['Event']}')"
-            mysql_connection.execute_query(events_query)
+        # Insert data into the events table in bulk
+        events_values = [(row['ID'], row['ID'], row['Sport'], row['Event']) for index, row in data_importer.table.iterrows()]
+        events_query = "INSERT INTO events (event_id, olympics_id, sport, event_name) VALUES (%s, %s, %s, %s)"
+        mysql_connection.executemany(events_query, events_values)
 
-        # Insert data into the athlete_events table
-        for index, row in data_importer.table.iterrows():
-            athlete_events_query = f"INSERT INTO athlete_events (athlete_id, team_id, event_id, medal, weight, height, age) VALUES ({row['ID']}, {row['ID']}, {row['ID']}, '{row['Medal']}', {row['Weight']}, {row['Height']}, {row['Age']})"
-            mysql_connection.execute_query(athlete_events_query)
-
+        # Insert data into the athlete_events table in bulk
+        athlete_events_values = [(row['ID'], row['ID'], row['ID'], row['Medal'], row['Weight'], row['Height'], row['Age']) for index, row in data_importer.table.iterrows()]
+        athlete_events_query = "INSERT INTO athlete_events (athlete_id, team_id, event_id, medal, weight, height, age) VALUES (%s, %s, %s, %s, %s, %s, %s)"
+        mysql_connection.executemany(athlete_events_query, athlete_events_values)
 
         print("Data imported to MySQL successfully.")
     except Exception as e:
         print(f"Error importing data to MySQL: {e}")
+
 else:
     print("No data loaded.")
