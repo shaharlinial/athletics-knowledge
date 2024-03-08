@@ -1,3 +1,5 @@
+import dataclasses
+
 import mysql.connector
 from mysql.connector import Error
 import pandas as pd
@@ -158,42 +160,95 @@ class DataImporter:
 
 if __name__ == '__main__':
     # Define database connection parameters
-    host = 'localhost'
-    user = 'root'
-    password = 'root'
-    database = 'mydatabase'
-
-    # Create MySQL connection
-    mysql_connection = MySQLConnection(host, user, password, database)
-    mysql_connection.connect()
-
-    # database CSV file
+    # host = 'localhost'
+    # user = 'root'
+    # password = 'root'
+    # database = 'mydatabase'
+    #
+    # # Create MySQL connection
+    # mysql_connection = MySQLConnection(host, user, password, database)
+    # mysql_connection.connect()
+    #
+    # # database CSV file
     from app import consts
     import os
 
+    #
     csv_path = os.path.join(consts.DATA_DIR, 'athlete_events.csv')
-
-
-    def insert_batch(mysql_connection, batch_size: int, query: str, values: list):
-        for j in range(len(values) // batch_size):
-            v_batch = values[j * batch_size: (j + 1) * batch_size]
-            mysql_connection.executemany(query, v_batch)
-
+    #
+    #
+    # def insert_batch(mysql_connection, batch_size: int, query: str, values: list):
+    #     for j in range(len(values) // batch_size):
+    #         v_batch = values[j * batch_size: (j + 1) * batch_size]
+    #         mysql_connection.executemany(query, v_batch)
+    #
 
     # Import data
     data_importer = DataImporter(csv_path)
     batch_size = 1000
+    athletes = set()
+    teams = set()
+    olympics = set()
+    events = set()
+    athlete_events = set()
+
+
+    @dataclasses.dataclass(frozen=True)
+    class Athlete:
+        name: str
+        sex: str
+
+
+    @dataclasses.dataclass(frozen=True)
+    class Team:
+        name: str
+        noc: str
+
+
+    @dataclasses.dataclass
+    class Olympic:
+        game: str
+        year: int
+        season: str
+        city: str
+
+
+    @dataclasses.dataclass
+    class Event:
+        id: int
+        sport: str
+        event: str
+
+
+    @dataclasses.dataclass
+    class AthleteEvent:
+        athlete_id: int
+        team_id: int
+        event_id: int
+        medal: str
+        weight: int
+        height: int
+        age: int
+
+
+    # athlete_events_query = "INSERT INTO athlete_events (athlete_id, team_id, event_id, medal, weight, height, age) VALUES (%s, %s, %s, %s, %s, %s, %s)"
+
     if data_importer.table is not None:
         try:
+
+            rows = data_importer.table.iterrows()
+            for index, row in rows:
+                athletes.add(Athlete(name=row['Name'], sex=row['Sex']))
+                teams.add(Team(name=row['Team'], noc=row['NOC']))
             # # Insert data into the athletes table in bulk
             # athlete_values = [(row['ID'], row['Name'], row['Sex']) for index, row in data_importer.table.iterrows()]
             # athlete_query = "INSERT IGNORE INTO athletes (athlete_id, name, sex) VALUES (%s, %s, %s)"
             # insert_batch(mysql_connection, batch_size, athlete_query, athlete_values)
 
-            # # Insert data into the teams table in bulk
-            team_values = [(row['ID'], row['Team'], row['NOC']) for index, row in data_importer.table.iterrows()]
-            team_query = "INSERT INTO teams (team_id, team_name, NOC) VALUES (%s, %s, %s)"
-            insert_batch(mysql_connection, batch_size, team_query, team_values)
+            # # # Insert data into the teams table in bulk
+            # team_values = [(row['ID'], row['Team'], row['NOC']) for index, row in data_importer.table.iterrows()]
+            # team_query = "INSERT INTO teams (team_id, team_name, NOC) VALUES (%s, %s, %s)"
+            # insert_batch(mysql_connection, batch_size, team_query, team_values)
             # mysql_connection.executemany(team_query, team_values)
             #
             # # Insert data into the olympics table in bulk
