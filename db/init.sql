@@ -34,7 +34,7 @@ CREATE TABLE `athlete_events` (
     weight INT,
     height INT,
     age INT,
-    PRIMARY KEY (athlete_id, event_id, team_id),
+    PRIMARY KEY (athlete_id, event_id, team_id, medal),
     FOREIGN KEY (athlete_id) REFERENCES athletes(athlete_id),
     FOREIGN KEY (team_id) REFERENCES teams(team_id),
     FOREIGN KEY (event_id) REFERENCES events(event_id)
