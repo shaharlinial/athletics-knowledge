@@ -1,0 +1,69 @@
+body, html {
+    height: auto; /* Adjusted from 100% to auto */
+    margin: 0;
+    font-family: 'Arial', sans-serif;
+    background-color: #f4f4f4;
+    text-align: center;
+    padding: 20px; /* Keep padding around */
+}
+
+.signup-container {
+    width: 100%;
+    max-width: 400px; /* Keep the form compact */
+    margin: auto; /* Center in the viewport */
+    padding: 40px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column; /* Stack elements vertically */
+    justify-content: center;
+    align-items: center;
+}
+
+h2 {
+    margin: 0 0 20px 0; /* Adjust title margin */
+    color: #333;
+    text-align: center; /* Ensure title is centered */
+}
+
+form {
+    width: 100%; /* Ensure form uses full container width */
+}
+
+input[type="text"],
+input[type="password"] {
+    width: calc(100% - 20px); /* Full width with padding */
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+button[type="submit"] {
+    width: calc(100% - 20px);
+    padding: 10px;
+    margin-top: 20px; /* Space above the button */
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+button[type="submit"]:hover {
+    background-color: #0056b3;
+}
+
+a {
+    color: #007bff;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+p {
+    margin-top: 20px; /* Ensure space above the paragraph */
+}

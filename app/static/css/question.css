@@ -1,0 +1,48 @@
+.question {
+    margin-bottom: 20px;
+    font-size: 1.2em;
+}
+
+.answer-option {
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+}
+
+input[type="radio"] {
+    margin-right: 5px;
+    cursor: pointer;
+}
+
+label {
+    cursor: pointer;
+}
+
+button[type="submit"] {
+    width: auto;
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 20px;
+}
+
+button[type="submit"]:hover {
+    background-color: #0056b3;
+}
+
+@media (max-width: 768px) {
+    .container {
+        width: 90%;
+        padding: 10px;
+    }
+
+    h1, .question {
+        margin-left: 10px;
+        margin-right: 10px;
+    }
+}
+
+

@@ -1,13 +1,61 @@
-body {
-    font-family: Arial, sans-serif;
+/* General body and font styling */
+body, html {
+    font-family: 'Arial', sans-serif;
+    background-color: #f4f4f4;
+    color: #333;
+    margin: 0;
+    padding: 20px;
+}
+
+/* Navigation styling */
+nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 20px 0;
+    background: #007bff;
     text-align: center;
-    margin: 50px;
+    border-radius: 5px;
+    overflow: hidden; /* Ensures border-radius applies to all nav items */
 }
 
-h1 {
-    color: #007BFF;
+nav ul li {
+    display: inline-block;
 }
 
-p {
-    color: #28A745;
+nav ul li a {
+    display: block;
+    padding: 10px 20px;
+    color: white;
+    text-decoration: none;
+    transition: background-color 0.3s ease;
+}
+
+nav ul li a:hover {
+    background-color: #0056b3;
+}
+
+/* Main application container */
+#app, .content-wrapper, .toolbar {
+    max-width: 800px; /* Adjust based on your content */
+    margin: auto;
+    padding: 20px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+h1, .page-title {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+/* Responsive adjustments for navigation items */
+@media (max-width: 768px) {
+    nav ul li {
+        display: block;
+    }
+
+    nav ul li a {
+        padding: 10px;
+    }
 }

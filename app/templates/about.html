@@ -1,5 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
+{% extends "base.html" %}
+
+{% block title %}About{% endblock %}%}
+
+{% block styles %}
+{% endblock %}
+{% block content %}
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,8 +14,4 @@
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
     <title>About Us</title>
 </head>
-<body>
-    <h1>About Us</h1>
-    <p>This is the about page of our website.</p>
-</body>
 </html>
