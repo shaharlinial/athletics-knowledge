@@ -5,3 +5,5 @@ from .olympic import Olympic
 from .team import Team
 from .event import Event
 from .question import Question
+from .countries import Country
+from .sport import Sport

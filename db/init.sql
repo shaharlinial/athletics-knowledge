@@ -11,8 +11,7 @@ CREATE TABLE `countries` (
 CREATE TABLE `teams` (
     team_id INT PRIMARY KEY AUTO_INCREMENT,
     NOC CHAR(3) NOT NULL,
-    team_name VARCHAR(255) NOT NULL,
-    FOREIGN KEY (NOC) REFERENCES countries(NOC)
+    team_name VARCHAR(255) NOT NULL
 );
 
 CREATE TABLE `olympics` (

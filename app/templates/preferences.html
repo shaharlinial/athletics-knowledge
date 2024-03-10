@@ -28,8 +28,8 @@
             <p>Preferred Time Range:</p>
             <select name="time_range" id="time_range">
                 {% for range in data.available_preferences.time_ranges %}
-                <option value="{{ range.start }}-{{ range.end }}" {% if range.start == data.user_preferences.time_ranges[0].start and range.end == data.user_preferences.time_ranges[0].end %} selected {% endif %}>
-                    {{ range.start }} to {{ range.end }}
+                <option value="{{ range[0] }}-{% if range|length > 1 %}{{ range[1] }}{% endif %}" {% if 'time_ranges' in data.user_preferences and range == data.user_preferences.time_ranges[0] %} selected {% endif %}>
+                    {{ range[0] }}{% if range|length > 1 %} to {{ range[1] }}{% endif %}
                 </option>
                 {% endfor %}
             </select>
