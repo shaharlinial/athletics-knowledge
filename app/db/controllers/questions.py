@@ -1,13 +1,13 @@
-from .base_controller import BaseController
-from ..entities.question import Question
+from . import base_controller
+from .. import entities
 
 
-class QuestionController(BaseController):
+class QuestionController(base_controller.BaseController):
 
     def __init__(self, sql_connection):
         super().__init__(sql_connection)
 
-    def get_question(self) -> Question:
+    def get_question(self) -> entities.question.Question:
         try:
             cursor = self.conn.cursor()
             cursor.execute(
@@ -35,7 +35,7 @@ class QuestionController(BaseController):
             question = cursor.fetchone()[0]
 
             # TODO: Shuffle Answers
-            return Question(
+            return entities.question.Question(
                 text=question,
                 answers=answers,
                 correct_answer=answers[0]

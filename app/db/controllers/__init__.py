@@ -1,1 +1,1 @@
-from .questions import QuestionController
+from . import questions
