@@ -60,11 +60,12 @@ def get_data():
 @web_app.route('/api/leaderboard')
 def get_leaderboard():
     user_id = session.get('user_id', '')
-    data = {"users":[{"user_id":35, "user_name": "shaharl", "first_name": "Shahar", "last_name": "Linial", "points": 18},
-                     {"user_id": 34, "user_name": "yahelj", "first_name": "Yahel", "last_name": "Jacobs", "points": 17},
-                     {"user_id":33, "user_name": "shayf", "first_name": "Shay", "last_name": "Franchi", "points": 16}
-                     ]}
-    return render_template('leaderboard.html', users=data['users'],user_id=user_id)
+    data = {
+        "users": [{"user_id": 35, "user_name": "shaharl", "first_name": "Shahar", "last_name": "Linial", "points": 18},
+                  {"user_id": 34, "user_name": "yahelj", "first_name": "Yahel", "last_name": "Jacobs", "points": 17},
+                  {"user_id": 33, "user_name": "shayf", "first_name": "Shay", "last_name": "Franchi", "points": 16}
+                  ]}
+    return render_template('leaderboard.html', users=data['users'], user_id=user_id)
 
 
 @web_app.route('/api/preferences', methods=['POST'])
@@ -138,7 +139,6 @@ def get_question():
     user_id = session.get('user_id', '')
     question_controller = QuestionController(g.db)
 
-
     user_id = session.get('user_id')
     user_id = 2
     # TODO : Move to general place
@@ -158,8 +158,7 @@ def generate_question_by_id(question_id):
     pass
 
 
-@app.route('/api/question', methods=['POST'])
-
+@web_app.route('/api/question', methods=['POST'])
 def submit_answer():
     selected_answer = request.form['answer']
     user_id = request.form['user_id']
@@ -170,7 +169,8 @@ def submit_answer():
     if correct:
         update_user_score_in_db(user_id, 10)
         question, answers = generate_question_by_id(question_id)
-    return render_template('question.html', question=question, answers=answers, user_id=user_id, correct_answer=correct_answer, submitted_answer=selected_answer, user_has_answered=True)
+    return render_template('question.html', question=question, answers=answers, user_id=user_id,
+                           correct_answer=correct_answer, submitted_answer=selected_answer, user_has_answered=True)
 
 
 def check_answer(selected_answer, question_id):
@@ -226,8 +226,7 @@ def signup():
 
         flash('User created successfully. Please login.', 'success')
         return redirect(url_for('index'))
-    return render_template('signup.html',user_id=session.get('user_id',''))
-
+    return render_template('signup.html', user_id=session.get('user_id', ''))
 
 
 def get_user_by_username_from_db(username):
