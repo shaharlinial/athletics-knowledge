@@ -24,10 +24,20 @@
                 <div class="answer-option">
                     <input type="radio" id="answer{{ loop.index }}" name="answer" value="{{ answer }}">
                     <label for="answer{{ loop.index }}">{{ answer }}</label>
+                    {% if answer == correct_answer %}
+                    <span>&nbsp;✓</span>
+                    {% elif submitted_answer == answer and answer != correct_answer %}
+                    <span>&nbsp;✗</span>
+                    {% endif %}
                 </div>
                 {% endfor %}
                 <button type="submit">Submit Answer</button>
             </form>
+            {% if user_has_answered %}
+            <form action="/api/question" method="get">
+                <button type="submit">Next Question</button>
+            </form>
+            {% endif %}
         </div>
     </div>
 {% endblock %}

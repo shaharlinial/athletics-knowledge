@@ -119,19 +119,27 @@ def get_question():
     return render_template('question.html', question=question, answers=answers, user_id=user_id)
     # return jsonify({'question': question, 'answers': answers})
 
+
+def get_correct_answer_for_question(question_id):
+    pass
+
+
+def generate_question_by_id(question_id):
+    pass
+
+
 @app.route('/api/question', methods=['POST'])
 
-def update_user_score(user_id, question_id, user_answer):
+def submit_answer():
     selected_answer = request.form['answer']
-    user_id = request.form['user_id']  # Make sure to include this in your form as a hidden field
-    question_id= request.form['question_id']
-    correct = check_answer(selected_answer,question_id)  # Placeholder for your answer checking logic
-
+    user_id = request.form['user_id']
+    question_id = request.form['question_id']
+    correct_answer = get_correct_answer_for_question(question_id)
+    correct = check_answer(selected_answer, question_id)
     if correct:
-        # Update points in the database
-        update_user_score_in_db(user_id, 10)  # Placeholder for your database update logic
-    #
-    return render_template('answer_feedback.html', correct=correct, user_id=user_id)
+        update_user_score_in_db(user_id, 10)
+        question, answers = generate_question_by_id(question_id)
+    return render_template('question.html', question=question, answers=answers, user_id=user_id, correct_answer=correct_answer, submitted_answer=selected_answer, user_has_answered=True)
 
 
 
