@@ -85,23 +85,9 @@ CREATE TABLE `sports_preferences` (
 );
 
 CREATE TABLE `question_templates` (
-    template_id INT PRIMARY KEY,
-    template_query VARCHAR(255) NOT NULL,
-    template_text VARCHAR(255) NOT NULL
-);
-
-CREATE TABLE `question_template_params` (
-    param_id INT PRIMARY KEY,
-    template_id INT,
-    param_value VARCHAR(255),
-    FOREIGN KEY (template_id) REFERENCES question_templates(template_id)
-);
-
-CREATE TABLE `questions` (
-    question_id INT PRIMARY KEY,
-    question_template_id INT,
-    user_id INT,
-    generated_question_text VARCHAR(255) NOT NULL
+    template_id INT PRIMARY KEY AUTO_INCREMENT,
+    template_query TEXT NOT NULL,
+    template_text TEXT NOT NULL
 );
 
 CREATE TABLE `user_progress` (
@@ -117,10 +103,13 @@ CREATE TABLE `user_progress` (
 
 CREATE TABLE `answers` (
     answer_id INT PRIMARY KEY AUTO_INCREMENT,
+    user_id INT,
     question_id INT,
-    answer_text VARCHAR(255),
+    answer_text TEXT,
     is_correct BOOLEAN NOT NULL,
-    points INT NOT NULL DEFAULT 0
+    points INT NOT NULL DEFAULT 0,
+    FOREIGN KEY (user_id) REFERENCES users(user_id),
+    FOREIGN KEY (question_id) REFERENCES question_templates(template_id)
 );
 
 INSERT INTO countries (NOC, name) VALUES

@@ -6,6 +6,7 @@ from . import base_controller
 from .. import entities
 
 
+#TODO: Add validation
 class PreferencesController(base_controller.BaseController):
     def __init__(self, sql_connection):
         super().__init__(sql_connection)
