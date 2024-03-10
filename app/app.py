@@ -18,13 +18,8 @@ def index():
 
 @app.route('/about')
 def about():
-    user_id = session.get('user_id')
-    return render_template('about.html',user_id=user_id)
-
-@app.route('/contact')
-def contact():
-    user_id = session.get('user_id')
-    return render_template('contact.html',user_id=user_id)
+    user_id = session.get('user_id', '')
+    return render_template('about.html', user_id=user_id)
 
 @app.route('/api/data')
 def get_data():
