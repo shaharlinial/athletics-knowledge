@@ -41,6 +41,7 @@ class MySQLConnection:
             return cursor.lastrowid
         except Error as e:
             print(f"Error executing query: {e}")
+            raise
 
     def insert_batch(self, batch_size: int, query: str, values):
         for i in range(0, len(values), batch_size):

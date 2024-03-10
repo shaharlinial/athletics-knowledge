@@ -1,8 +1,6 @@
 from flask import render_template, request, session
 from app.db import controllers
 from flask import jsonify
-
-from flask import Blueprint
 from flask import g
 
 

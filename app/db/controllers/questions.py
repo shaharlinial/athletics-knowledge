@@ -9,7 +9,7 @@ class QuestionController(base_controller.BaseController):
 
     def get_question(self) -> entities.question.Question:
         try:
-            cursor = self.conn.cursor()
+            cursor = self.db.connection.cursor()
             cursor.execute(
                 """
                 select template_query, template_text INTO @sql_txt, @sql_question from question_templates;

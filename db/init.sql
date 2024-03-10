@@ -41,15 +41,17 @@ CREATE TABLE `athlete_events` (
 );
 
 CREATE TABLE `users` (
-    user_id INT PRIMARY KEY,
+    user_id INT PRIMARY KEY AUTO_INCREMENT,
     user_name VARCHAR(50) NOT NULL,
+    hashed_password VARCHAR(255) NOT NULL,
     first_name VARCHAR(50) NOT NULL,
     last_name VARCHAR(50) NOT NULL,
-    points INT DEFAULT 0
+    points INT DEFAULT 0,
+    UNIQUE(user_name)
 );
 
 CREATE TABLE `preferences` (
-    preference_id INT PRIMARY KEY,
+    preference_id INT PRIMARY KEY AUTO_INCREMENT,
     user_id INT,
     preference_param VARCHAR(255),
     preference_value VARCHAR(255),

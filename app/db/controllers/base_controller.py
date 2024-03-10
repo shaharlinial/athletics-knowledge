@@ -1,4 +1,4 @@
 class BaseController:
 
-    def __init__(self, sql_connection):
-        self.conn = sql_connection.connection
+    def __init__(self, db):
+        self.db = db
