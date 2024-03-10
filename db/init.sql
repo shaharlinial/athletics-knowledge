@@ -71,6 +71,7 @@ CREATE TABLE `country_preferences` (
 CREATE TABLE `year_preferences` (
     preference_id INT PRIMARY KEY AUTO_INCREMENT,
     user_id INT,
+    preference_param VARCHAR(10),
     preference_value SMALLINT,
     FOREIGN KEY (user_id) REFERENCES users(user_id)
 );
