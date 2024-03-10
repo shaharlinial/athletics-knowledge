@@ -41,6 +41,7 @@ def get_leaderboard():
                      ]}
     return render_template('leaderboard.html', users=data['users'],user_id=user_id)
 
+
 @app.route('/api/preferences', methods=['POST'])
 def set_preferences():
     # Extract form data
@@ -65,6 +66,7 @@ def update_preferences_in_db(user_id, country, start_time, end_time, sport_type)
 def get_preferences():
     # Simulating fetching data from '/api/preferences'
     user_id = session.get('user_id')
+
     if not user_id:
         return jsonify({'error': 'User ID is required'}), 400
 
@@ -84,6 +86,7 @@ def get_preferences():
         data['user_preferences'] = user_preferences
     return render_template('preferences.html', data=data, user_id=user_id)
     # return jsonify(data)
+
 
 def get_user_preferences(user_id):
     # Placeholder function to simulate fetching user preferences from a database
@@ -105,6 +108,7 @@ def get_user_preferences(user_id):
 def get_question():
     # Simulating fetching a question from '/api/question'
     user_id = session.get('user_id')
+
     if not user_id:
         return jsonify({'error': 'User ID is required'}), 400
 
@@ -135,15 +139,18 @@ def update_user_score(user_id, question_id, user_answer):
     return render_template('answer_feedback.html', correct=correct, user_id=user_id)
 
 
+
 def check_answer(selected_answer, question_id):
     # Placeholder function to check the selected answer against the correct answer in the database
     # Implement your answer checking logic here
     # This example always returns True for demonstration
     return True
+
 def update_user_score_in_db(user_id, points):
     # Placeholder function to update the user's score in the database
     # Implement your database update logic here
     pass
+
 
 def get_multiple_choice_answers(answer, answer_type):
     # Placeholder function to fetch multiple-choice answers from the database
@@ -151,6 +158,7 @@ def get_multiple_choice_answers(answer, answer_type):
     # Example return value:
     return ['Answer 1', 'Answer 2', 'Answer 3', 'Answer 4']
 
+  
 def generate_question_based_on_preferences(preferences):
     # Placeholder function to generate a question based on user preferences
     # Implement your question generation logic here based on the user's preferences
