@@ -31,7 +31,12 @@ class Olympic:
 class Event:
     olympic_id: int
     name: str
-    sport: str
+    sport_id: int
+
+
+@dataclasses.dataclass(frozen=True)
+class Sport:
+    name: str
 
 
 @dataclasses.dataclass(frozen=True)
@@ -43,6 +48,7 @@ class AthleteEvent:
     weight: int
     height: int
     age: int
+
 
 class DataImporter:
     def __init__(self, path):
@@ -70,7 +76,6 @@ class DataImporter:
                 print(f"Column '{column_name}' not found.")
         else:
             print("No data loaded.")
-
 
 
 if __name__ == '__main__':
@@ -104,9 +109,9 @@ if __name__ == '__main__':
     ol_cur_id = 1
     events = {}
     ev_cur_id = 1
+    sports = {}
+    sport_cur_id = 1
     athlete_events = set()
-
-
 
     if data_importer.table is not None:
         try:
@@ -150,9 +155,19 @@ if __name__ == '__main__':
 
                 ol_id = olympics[ol]
 
+                sport = Sport(
+                    name=row['Sport']
+                )
+
+                if sport not in sports:
+                    sports[sport] = sport_cur_id
+                    sport_cur_id += 1
+
+                sport_id = sports[sport]
+
                 ev = Event(
                     olympic_id=ol_id,
-                    sport=row['Sport'],
+                    sport_id=sport_id,
                     name=row['Event']
                 )
                 if ev not in events:
@@ -216,11 +231,18 @@ if __name__ == '__main__':
                         olympics.items()]
             )
 
-            events_query = "INSERT INTO events (event_id, olympics_id, sport, event_name) VALUES (%s, %s, %s, %s)"
+            sports_query = "INSERT INTO sports (sport_id, name) VALUES (%s, %s)"
+            mysql_connection.insert_batch(
+                batch_size=1000,
+                query=sports_query,
+                values=[(sport_id, sport.name) for sport, sport_id in sports.items()]
+            )
+
+            events_query = "INSERT INTO events (event_id, olympics_id, sport_id, event_name) VALUES (%s, %s, %s, %s)"
             mysql_connection.insert_batch(
                 batch_size=1000,
                 query=events_query,
-                values=[(event_id, event.olympic_id, event.sport, event.name) for event, event_id in events.items()]
+                values=[(event_id, event.olympic_id, event.sport_id, event.name) for event, event_id in events.items()]
             )
 
             athlete_events_query = "INSERT INTO athlete_events (athlete_id, team_id, event_id, medal, weight, height, age) VALUES (%s, %s, %s, %s, %s, %s, %s)"

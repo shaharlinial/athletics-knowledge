@@ -79,23 +79,6 @@ def generate_question_based_on_preferences(sql_connection, preferences):
     return q, a, answer_type
 
 
-def create_user_in_db(user_id, username, password, firstname, lastname):
-    pass
-
-
-
-def get_user_by_username_from_db(username):
-    return {
-        'user_id': '123',
-        'username': 'aaa',
-        'hashed_password': 'scrypt:32768:8:1$QJfdYoBRpF3jcXmS$c7e5d023e06357af0ef948b228f81cc85848cae15d2f6c26a5245076edd211a02ff39bbcceed559b209f5d4b56511089e9312b1b62d8968aa5815a69c8976a36',
-        'firstname': 'Shahar',
-        'lastname': 'Linial'
-    }
-
-
-
-
 def get_db():
     host = 'localhost'
     user = 'root'

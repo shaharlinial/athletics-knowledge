@@ -18,9 +18,9 @@
             <th>Points</th>
         </tr>
         {% for user in users %}
-        <tr data-user-id="{{ user.user_id }}"> <!-- data attribute for user_id -->
+        <tr data-user-id="{{ user.id }}"> <!-- data attribute for user_id -->
             <td>{{ user.first_name }} {{ user.last_name }}</td>
-            <td>{{ user.points }}</td>
+            <td>{{ user.score }}</td>
         </tr>
         {% endfor %}
     </table>

@@ -1,3 +1,5 @@
+import typing
+
 from . import base_controller
 from .. import entities
 
@@ -39,3 +41,14 @@ class UserController(base_controller.BaseController):
             return False
 
         return entities.User(*result)
+
+    def fetch_leaderboard(self, limit=10) -> typing.List[entities.User]:
+
+        select_user_query = f"SELECT user_id, user_name, first_name, last_name, hashed_password, points FROM users ORDER BY points DESC LIMIT {limit}"
+        try:
+            result = self.db.fetch_data(select_user_query)
+        except Exception:
+            #  Duplicate user in database, retry please
+            return False
+
+        return [entities.User(*res) for res in result]
