@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<{% extends "base.html" %}
+
+{% block title %}User Preferences{% endblock %}%}
+
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/preferences.css') }}">
+{% endblock %}
+{% block content %}
+
+<body>
+    <h1>User Preferences</h1>
+    <form action="/preferences" method="post">
+        <input type="hidden" name="user_id" value="{{ data.user_preferences.user_id }}">
+
+        <div>
+            <p>Countries:</p>
+            {% for country in data.available_preferences.countries %}
+            <div>
+                <input type="checkbox" id="country_{{ loop.index }}" name="country" value="{{ country }}" {% if country in data.user_preferences.countries %} checked {% endif %}>
+                <label for="country_{{ loop.index }}">{{ country }}</label>
+            </div>
+            {% endfor %}
+        </div>
+
+        <div>
+            <p>Preferred Time Range:</p>
+            <select name="time_range" id="time_range">
+                {% for range in data.available_preferences.time_ranges %}
+                <option value="{{ range.start }}-{{ range.end }}" {% if range.start == data.user_preferences.time_ranges[0].start and range.end == data.user_preferences.time_ranges[0].end %} selected {% endif %}>
+                    {{ range.start }} to {{ range.end }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div>
+            <p>Sport Types:</p>
+            {% for sport in data.available_preferences.sport_types %}
+            <div>
+                <input type="checkbox" id="sport_type_{{ loop.index }}" name="sport_type" value="{{ sport }}" {% if sport in data.user_preferences.sport_types %} checked {% endif %}>
+                <label for="sport_type_{{ loop.index }}">{{ sport }}</label>
+            </div>
+            {% endfor %}
+        </div>
+
+        <button type="submit">Save Preferences</button>
+    </form>
+{% endblock %}
+</body>
+</html>

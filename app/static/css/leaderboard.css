@@ -1,0 +1,48 @@
+/* Base styling */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body, html {
+    height: 100%;
+    font-family: 'Arial', sans-serif;
+    background-color: #f4f4f4;
+    color: #333;
+    padding: 20px 0; /* Add padding at the top and bottom */
+}
+
+/* Leaderboard title */
+h2 {
+    margin-bottom: 20px; /* Add more space below the title */
+    color: #333;
+    text-align: center; /* Ensure title is centered */
+    font-size: 2em; /* Make the title larger */
+}
+
+/* Table styling */
+table {
+    width: 90%; /* Make table wider */
+    max-width: 95%; /* Allow it to stretch more on larger screens */
+    border-collapse: collapse;
+    margin: 0 auto; /* Center table horizontally */
+    background-color: #ffffff;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    border-radius: 8px;
+    overflow: hidden; /* Ensure border-radius applies to table */
+}
+
+th, td {
+    padding: 15px; /* Increase padding for more space around text */
+    border-bottom: 1px solid #ddd;
+    text-align: left; /* Align text to the left */
+}
+
+th {
+    background-color: #007bff;
+    color: #ffffff;
+}
+
+tr:hover {
+    background-color: #f5f5f5; /* Highlight row on hover */

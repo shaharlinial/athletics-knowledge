@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+{% extends "base.html" %}
+
+{% block title %}Question Based on Preferences{% endblock %}%}
+
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/question.css') }}">
+{% endblock %}
+{% block content %}
+<body>
+    <div class="content-wrapper">
+        <h1 class="page-title">Question Based on Preferences</h1>
+        <h4>Here's a question for you:</h4>
+
+
+        <!-- Container starts here -->
+        <div class="question.container">
+            <form action="/submit_answer" method="post">
+                <p class="question">{{ question }}</p>
+                <input type="hidden" name="user_id" value="{{ user_id }}">
+                <input type="hidden" name="question_id" value="{{ question_id }}">
+                {% for answer in answers %}
+                <div class="answer-option">
+                    <input type="radio" id="answer{{ loop.index }}" name="answer" value="{{ answer }}">
+                    <label for="answer{{ loop.index }}">{{ answer }}</label>
+                </div>
+                {% endfor %}
+                <button type="submit">Submit Answer</button>
+            </form>
+        </div>
+    </div>
+{% endblock %}
+</body>
+</html>

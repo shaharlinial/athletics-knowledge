@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+{% extends "base.html" %}
+
+{% block title %}Leaderboard{% endblock %}%}
+
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/leaderboard.css') }}">
+{% endblock %}
+{% block content %}
+
+<body>
+    <h2>Leaderboard</h2>
+    <table border="1">
+        <tr>
+            <th>User</th>
+            <th>Points</th>
+        </tr>
+        {% for user in users %}
+        <tr data-user-id="{{ user.user_id }}"> <!-- data attribute for user_id -->
+            <td>{{ user.first_name }} {{ user.last_name }}</td>
+            <td>{{ user.points }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+{% endblock %}
+</body>
+</html>

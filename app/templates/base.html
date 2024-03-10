@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <title>Flask Application-{% block title %}{% endblock %} </title>
+    {% block styles %}
+    <!-- Other templates can add their own styles here if needed -->
+    {% endblock %}
+</head>
+
+<body>
+    <div class="toolbar">
+       <nav>
+        <ul>
+            <li><a href="/">Home</a></li>
+            <li><a href="/about">About</a></li>
+            <li><a href="/contact">Contact</a></li>
+            <li><a href="/api/leaderboard">Leader Board</a></li>
+            <!-- These links will be conditionally displayed -->
+            <li id="preferencesLink" style="display:none;"><a href="/api/preferences">Preferences</a></li>
+            <li id="questionLink" style="display:none;"><a href="/api/question">Question</a></li>
+            <li id="loginLink" style="display:none;"><a href="/login">Login</a></li>
+            <li id="logoutLink" style="display:none;"><a href="/logout">Logout</a></li> <!-- Added logout link -->
+        </ul>
+        </nav>
+    </div>
+
+    <div class="content-wrapper">
+    {% block content %}
+    <!-- Content unique to each page will go here -->
+    {% endblock %}
+    </div>
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var userId = "{{ user_id }}"; // This assumes you're passing `user_id` from your Flask route
+        if(userId) {
+            document.getElementById('preferencesLink').style.display = '';
+            document.getElementById('questionLink').style.display = '';
+            document.getElementById('logoutLink').style.display = '';
+            document.getElementById('loginLink').style.display = 'none';
+        } else {
+            document.getElementById('preferencesLink').style.display = 'none';
+            document.getElementById('questionLink').style.display = 'none';
+            document.getElementById('logoutLink').style.display = 'none';
+            document.getElementById('loginLink').style.display = '';
+        }
+    });
+</script>
+
+{% endblock %}
+</body>
+</html>
