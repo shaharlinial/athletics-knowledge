@@ -1,0 +1,53 @@
+Text - Among the [countries][V], which country secured the most gold medals in the [year][V] Summer Olympics?
+
+Query -
+
+SELECT t.NOC AS country, COUNT(*) AS c
+FROM athlete_events AS ae
+INNER JOIN teams AS t ON t.team_id = ae.team_id
+INNER JOIN events AS e ON e.event_id = ae.event_id
+INNER JOIN olympics AS o ON o.olympics_id = e.olympics_id
+WHERE
+o.season = 'Summer' AND
+ae.medal = 'Gold' AND
+(
+    t.NOC IN (
+      SELECT preference_value FROM preferences WHERE preference_param = 't.NOC' and user_id = 2
+    )
+    OR NOT EXISTS (SELECT 1 FROM preferences WHERE preference_param = 't.NOC' and user_id = 2)
+)  AND
+
+o.year >= COALESCE(
+	(SELECT preference_value FROM preferences WHERE preference_param = 't.start_year' and user_id = 2), 1000
+) AND
+o.year <= COALESCE(
+	(SELECT preference_value FROM preferences WHERE preference_param = 't.end_year' and user_id = 2), 3000
+) AND
+(
+    e.sport IN (
+      SELECT preference_value FROM preferences WHERE preference_param = 'sport' and user_id = 2
+    )
+    OR NOT EXISTS (SELECT 1 FROM preferences WHERE preference_param = 'sport' and user_id = 2)
+)
+
+GROUP BY t.NOC
+ORDER BY c DESC;
+
+
+Text - In the [year] Winter Olympics, which [country] athlete won the most medals across all sports?
+Query -
+
+Which [country] athlete set a new world record in [sport] during the [year] Olympics?
+Among the [countries] in the [year] Summer Olympics, which nation topped the medal tally in [sport]?
+Which [country] swimmer won the most gold medals in the [year] Olympics?
+In which year [athlete] won [medal] medal during the [season] Olympics?
+Which athlete won the most medals for their [country]?
+Among the [countries], which country secured the least number of medals in the [year] Olympics?
+Which of the [countries] have the lowest ratio winter to summer medals?
+Which of the [countries] holds the longest gold streak, securing at least one gold medal?
+Which [country] athlete secured a gold medal but only silver medal in the following Olympics in [year]?
+Among the [countries] participating in the [year] Olympics, which nation had the highest number of female gold medallists?
+Among the [countries] participating in the [year] Olympics, which nation had the highest number of female participations?
+Who was the shortest/highest [country] athlete, standing at [height] cm, to participate in the [year] Olympics?
+Who was the heaviest/lightest [country] athlete, standing at [height] kg, to participate in the [year] Olympics?
+Who was the oldest/youngest [country] athlete, standing at [age], to participate in the [year] Olympics?
