@@ -1,4 +1,4 @@
-Text - Among the [countries][V], which country secured the most gold medals in the [year][V] Summer Olympics?
+Text - Among the [countries], which country secured the most gold medals in the [year] Summer Olympics?
 
 Query -
 
@@ -34,11 +34,86 @@ GROUP BY t.NOC
 ORDER BY c DESC;
 
 
-Text - In the [year] Winter Olympics, which [country] athlete won the most medals across all sports?
+Text - In the [year] Winter Olympics, which athlete from [country] won the most medals across all sports?
 Query -
+SELECT
+    a.name,
+    COUNT(*) AS total_medals,
+    MAX(t.NOC) AS majority_NOC
+FROM
+    athlete_events AS ae
+INNER JOIN
+    teams AS t ON t.team_id = ae.team_id
+INNER JOIN
+    events AS e ON e.event_id = ae.event_id
+INNER JOIN
+    olympics AS o ON o.olympics_id = e.olympics_id
+INNER JOIN
+    athletes AS a ON a.athlete_id = ae.athlete_id
+WHERE
+    o.season = 'Winter'
+    AND ae.medal != 'NA'
+    AND (
+        t.NOC IN (
+            SELECT preference_value FROM preferences WHERE preference_param = 't.NOC' AND user_id = 2
+        )
+        OR NOT EXISTS (SELECT 1 FROM preferences WHERE preference_param = 't.NOC' AND user_id = 2)
+    )
+    AND o.year >= COALESCE(
+        (SELECT preference_value FROM preferences WHERE preference_param = 't.start_year' AND user_id = 2), 1000
+    )
+    AND o.year <= COALESCE(
+        (SELECT preference_value FROM preferences WHERE preference_param = 't.end_year' AND user_id = 2), 3000
+    )
+GROUP BY
+    a.name
+ORDER BY
+    total_medals DESC;
 
-Which [country] athlete set a new world record in [sport] during the [year] Olympics?
-Among the [countries] in the [year] Summer Olympics, which nation topped the medal tally in [sport]?
+
+Text - Which athlete from [country] set a new world record in [sport] during the [year] Olympics?
+Query - ?
+
+Text - Among the [countries] in the [year] Summer Olympics, which nation topped the medal tally in [sport]?
+Comment - year needs to be taken from preferences
+Query -
+SELECT
+    t.NOC AS country,
+    COUNT(*) AS total_medals
+FROM
+    athlete_events AS ae
+INNER JOIN
+    teams AS t ON t.team_id = ae.team_id
+INNER JOIN
+    events AS e ON e.event_id = ae.event_id
+INNER JOIN
+    olympics AS o ON o.olympics_id = e.olympics_id
+WHERE
+	o.year = '2000' AND
+    o.season = 'Summer' AND
+	ae.medal != 'NA'  AND (
+        t.NOC IN (
+            SELECT preference_value FROM preferences WHERE preference_param = 't.NOC' AND user_id = 2
+        )
+        OR NOT EXISTS (SELECT 1 FROM preferences WHERE preference_param = 't.NOC' AND user_id = 2)
+    )
+    AND o.year >= COALESCE(
+        (SELECT preference_value FROM preferences WHERE preference_param = 't.start_year' AND user_id = 2), 1000
+    )
+    AND o.year <= COALESCE(
+        (SELECT preference_value FROM preferences WHERE preference_param = 't.end_year' AND user_id = 2), 3000
+    )
+GROUP BY
+    t.NOC
+ORDER BY
+    total_medals DESC;
+
+
+
+
+
+
+
 Which [country] swimmer won the most gold medals in the [year] Olympics?
 In which year [athlete] won [medal] medal during the [season] Olympics?
 Which athlete won the most medals for their [country]?
