@@ -59,13 +59,12 @@ def get_data():
 
 @web_app.route('/api/leaderboard')
 def get_leaderboard():
-    user_id = session.get('user_id')
-    data = {
-        "users": [{"user_id": 35, "user_name": "shaharl", "first_name": "Shahar", "last_name": "Linial", "points": 18},
-                  {"user_id": 34, "user_name": "yahelj", "first_name": "Yahel", "last_name": "Jacobs", "points": 17},
-                  {"user_id": 33, "user_name": "shayf", "first_name": "Shay", "last_name": "Franchi", "points": 16}
-                  ]}
-    return render_template('leaderboard.html', users=data['users'], user_id=user_id)
+    user_id = session.get('user_id', '')
+    data = {"users":[{"user_id":35, "user_name": "shaharl", "first_name": "Shahar", "last_name": "Linial", "points": 18},
+                     {"user_id": 34, "user_name": "yahelj", "first_name": "Yahel", "last_name": "Jacobs", "points": 17},
+                     {"user_id":33, "user_name": "shayf", "first_name": "Shay", "last_name": "Franchi", "points": 16}
+                     ]}
+    return render_template('leaderboard.html', users=data['users'],user_id=user_id)
 
 
 @web_app.route('/api/preferences', methods=['POST'])
@@ -93,7 +92,7 @@ def update_preferences_in_db(user_id, country, start_time, end_time, sport_type)
 @web_app.route('/api/preferences')
 def get_preferences():
     # Simulating fetching data from '/api/preferences'
-    user_id = session.get('user_id')
+    user_id = session.get('user_id', '')
 
     if not user_id:
         return jsonify({'error': 'User ID is required'}), 400
@@ -135,7 +134,10 @@ def get_user_preferences(user_id):
 
 @web_app.route('/api/question', methods=['GET'])
 def get_question():
+    # Simulating fetching a question from '/api/question'
+    user_id = session.get('user_id', '')
     question_controller = QuestionController(g.db)
+
 
     user_id = session.get('user_id')
     user_id = 2
@@ -148,18 +150,27 @@ def get_question():
     # return jsonify({'question': question, 'answers': answers})
 
 
-@web_app.route('/api/question', methods=['POST'])
-def update_user_score(user_id, question_id, user_answer):
+def get_correct_answer_for_question(question_id):
+    pass
+
+
+def generate_question_by_id(question_id):
+    pass
+
+
+@app.route('/api/question', methods=['POST'])
+
+def submit_answer():
     selected_answer = request.form['answer']
-    user_id = request.form['user_id']  # Make sure to include this in your form as a hidden field
+    user_id = request.form['user_id']
     question_id = request.form['question_id']
-    correct = check_answer(selected_answer, question_id)  # Placeholder for your answer checking logic
+    correct_answer = get_correct_answer_for_question(question_id)
+    correct = check_answer(selected_answer, question_id)
 
     if correct:
-        # Update points in the database
-        update_user_score_in_db(user_id, 10)  # Placeholder for your database update logic
-    #
-    return render_template('answer_feedback.html', correct=correct, user_id=user_id)
+        update_user_score_in_db(user_id, 10)
+        question, answers = generate_question_by_id(question_id)
+    return render_template('question.html', question=question, answers=answers, user_id=user_id, correct_answer=correct_answer, submitted_answer=selected_answer, user_has_answered=True)
 
 
 def check_answer(selected_answer, question_id):
@@ -215,7 +226,8 @@ def signup():
 
         flash('User created successfully. Please login.', 'success')
         return redirect(url_for('index'))
-    return render_template('signup.html', user_id=session.get('user_id'))
+    return render_template('signup.html',user_id=session.get('user_id',''))
+
 
 
 def get_user_by_username_from_db(username):
