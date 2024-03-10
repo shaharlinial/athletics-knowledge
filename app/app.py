@@ -29,7 +29,7 @@ def get_data():
 
 @app.route('/api/leaderboard')
 def get_leaderboard():
-    user_id = session.get('user_id')
+    user_id = session.get('user_id', '')
     data = {"users":[{"user_id":35, "user_name": "shaharl", "first_name": "Shahar", "last_name": "Linial", "points": 18},
                      {"user_id": 34, "user_name": "yahelj", "first_name": "Yahel", "last_name": "Jacobs", "points": 17},
                      {"user_id":33, "user_name": "shayf", "first_name": "Shay", "last_name": "Franchi", "points": 16}
@@ -60,7 +60,7 @@ def update_preferences_in_db(user_id, country, start_time, end_time, sport_type)
 @app.route('/api/preferences')
 def get_preferences():
     # Simulating fetching data from '/api/preferences'
-    user_id = session.get('user_id')
+    user_id = session.get('user_id', '')
 
     if not user_id:
         return jsonify({'error': 'User ID is required'}), 400
@@ -102,7 +102,7 @@ def get_user_preferences(user_id):
 @app.route('/api/question', methods=['GET'])
 def get_question():
     # Simulating fetching a question from '/api/question'
-    user_id = session.get('user_id')
+    user_id = session.get('user_id', '')
 
     if not user_id:
         return jsonify({'error': 'User ID is required'}), 400
@@ -185,7 +185,7 @@ def signup():
 
         flash('User created successfully. Please login.', 'success')
         return redirect(url_for('index'))
-    return render_template('signup.html',user_id=session.get('user_id'))
+    return render_template('signup.html',user_id=session.get('user_id',''))
 
 
 def get_user_by_username_from_db(username):
