@@ -1,3 +1,7 @@
+[countries]
+[years]
+[sports]
+
 Text - Among the [countries], which country secured the most gold medals in the [year] Summer Olympics?
 
 Query -
