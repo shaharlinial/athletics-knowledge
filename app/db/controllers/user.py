@@ -42,13 +42,23 @@ class UserController(base_controller.BaseController):
 
         return entities.User(*result)
 
-    def fetch_leaderboard(self, limit=10) -> typing.List[entities.User]:
+    def fetch_leaderboard(self, limit=10) -> typing.List[typing.Dict]:
 
-        select_user_query = f"SELECT user_id, user_name, first_name, last_name, hashed_password, points FROM users ORDER BY points DESC LIMIT {limit}"
+        leaderboard_query = f"""
+            select users.user_id, users.first_name, users.last_name,sum(answers.points) as total_points from answers
+            inner join users on users.user_id = answers.user_id
+            group by answers.user_id
+            order by total_points desc;
+        """
         try:
-            result = self.db.fetch_data(select_user_query)
+            result = self.db.fetch_data(leaderboard_query)
         except Exception:
             #  Duplicate user in database, retry please
             return False
 
-        return [entities.User(*res) for res in result]
+        return [{
+            'id': res[0],
+            'first_name': res[1],
+            'last_name': res[2],
+            'score': res[3]
+        } for res in result]

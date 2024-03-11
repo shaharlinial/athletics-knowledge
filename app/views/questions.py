@@ -9,14 +9,11 @@ def get_question():
     user_id = session.get('user_id', '')
     question_controller = controllers.questions.QuestionController(g.db)
 
-    user_id = session.get('user_id')
-    user_id = 2
-    # TODO : Move to general place
     if not user_id:
         return jsonify({'error': 'User ID is required'}), 400
 
-    q = question_controller.get_question()
-    return render_template('question.html', question=q.text, answers=q.answers, user_id=user_id)
+    q = question_controller.generate_question(user_id)
+    return render_template('question.html', question=q.text, answers=q.answers, question_id=q.id, user_id=user_id)
     # return jsonify({'question': question, 'answers': answers})from flask import g
 
 
@@ -25,13 +22,11 @@ def submit_answer():
     selected_answer = request.form['answer']  # 'USA'
     user_id = request.form['user_id']
     question_id = request.form['question_id']
-    # correct_answer = get_correct_answer_for_question(question_id)
-    # correct = check_answer(selected_answer, question_id)
 
+    question_controller = controllers.questions.QuestionController(g.db)
+    q = question_controller.get_question(user_id, question_id)
+    correct = selected_answer == q.correct_answer
+    question_controller.save_answer(question_id, user_id, selected_answer, correct)
 
-    #
-    # if correct:
-    #     update_user_score_in_db(user_id, 10)
-    #     question, answers = generate_question_by_id(question_id)
-    return render_template('question.html', question=question, answers=answers, user_id=user_id,
-                           correct_answer=correct_answer, submitted_answer=selected_answer, user_has_answered=True)
+    return render_template('question.html', question=q.text, answers=q.answers, user_id=user_id,
+                           correct_answer=q.correct_answer, submitted_answer=selected_answer, user_has_answered=True)

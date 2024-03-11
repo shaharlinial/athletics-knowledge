@@ -22,7 +22,7 @@
                 <input type="hidden" name="question_id" value="{{ question_id }}">
                 {% for answer in answers %}
                 <div class="answer-option">
-                    <input type="radio" id="answer{{ loop.index }}" name="answer" value="{{ answer }}">
+                    <input type="radio" id="answer{{ loop.index }}" name="answer" value="{{ answer }}" {% if submitted_answer == answer %} checked {% endif %}>
                     <label for="answer{{ loop.index }}">{{ answer }}</label>
                     {% if answer == correct_answer %}
                     <span>&nbsp;✓</span>
@@ -31,7 +31,9 @@
                     {% endif %}
                 </div>
                 {% endfor %}
-                <button type="submit">Submit Answer</button>
+                {% if not user_has_answered %}
+                    <button type="submit">Submit Answer</button>
+                {% endif %}
             </form>
             {% if user_has_answered %}
             <form action="/api/question" method="get">
