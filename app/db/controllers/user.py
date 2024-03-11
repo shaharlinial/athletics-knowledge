@@ -16,11 +16,11 @@ class UserController(base_controller.BaseController):
             last_name: str
     ) -> int:
 
-        insert_user_query = f"INSERT INTO users (user_name,hashed_password, first_name, last_name, points) VALUES (%s,%s, %s, %s, %s)"
+        insert_user_query = f"INSERT INTO users (user_name,hashed_password, first_name, last_name) VALUES (%s,%s, %s, %s)"
         try:
             user_id = self.db.execute_query(
                 insert_user_query,
-                (username, hashed_password, first_name, last_name, 0)
+                (username, hashed_password, first_name, last_name)
             )
         except Exception:
             #  Duplicate user in database, retry please

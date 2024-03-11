@@ -21,8 +21,8 @@ class FakeUsersCreator:
             )
             cursor.execute(
                 f"""
-                INSERT INTO users (user_name, first_name, last_name, hashed_password, points)
-                VALUES ('{u.user_name}', '{u.first_name}', '{u.last_name}', '{u.hashed_password}', {u.score});
+                INSERT INTO users (user_name, first_name, last_name, hashed_password)
+                VALUES ('{u.user_name}', '{u.first_name}', '{u.last_name}', '{u.hashed_password}');
                 """
             )
             user_id = cursor.lastrowid
