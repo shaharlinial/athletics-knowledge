@@ -18,22 +18,22 @@ WHERE
     ae.medal = 'Gold' AND
     (
         t.NOC IN (
-          SELECT preference_value FROM country_preferences WHERE user_id = 1
+          SELECT preference_value FROM country_preferences WHERE user_id = <user_id>
         )
-        OR NOT EXISTS (SELECT 1 FROM country_preferences WHERE user_id = 1)
+        OR NOT EXISTS (SELECT 1 FROM country_preferences WHERE user_id = <user_id>)
     )  AND
 
     o.year >= COALESCE(
-        (SELECT preference_value FROM year_preferences WHERE preference_param = 'start_year' and user_id = 1), 1000
+        (SELECT preference_value FROM year_preferences WHERE preference_param = 'start_year' and user_id = <user_id>), 1000
     ) AND
     o.year <= COALESCE(
-        (SELECT preference_value FROM year_preferences WHERE preference_param = 'end_year' and user_id = 1), 3000
+        (SELECT preference_value FROM year_preferences WHERE preference_param = 'end_year' and user_id = <user_id>), 3000
     ) AND
     (
         e.sport_id IN (
-          SELECT preference_value FROM sports_preferences WHERE user_id = 1
+          SELECT preference_value FROM sports_preferences WHERE user_id = <user_id>
         )
-        OR NOT EXISTS (SELECT 1 FROM sports_preferences WHERE user_id = 1)
+        OR NOT EXISTS (SELECT 1 FROM sports_preferences WHERE user_id = <user_id>)
     )
 
 GROUP BY
@@ -63,15 +63,15 @@ WHERE
     AND ae.medal != 'NA'
     AND (
         t.NOC IN (
-            SELECT preference_value FROM country_preferences WHERE user_id = 1
+            SELECT preference_value FROM country_preferences WHERE user_id = <user_id>
         )
-        OR NOT EXISTS (SELECT 1 FROM country_preferences WHERE user_id = 1)
+        OR NOT EXISTS (SELECT 1 FROM country_preferences WHERE user_id = <user_id>)
     )
     AND o.year >= COALESCE(
-        (SELECT preference_value FROM year_preferences WHERE preference_param = 'start_year' AND user_id = 1), 1000
+        (SELECT preference_value FROM year_preferences WHERE preference_param = 'start_year' AND user_id = <user_id>), 1000
     )
     AND o.year <= COALESCE(
-        (SELECT preference_value FROM year_preferences WHERE preference_param = 'end_year' AND user_id = 1), 3000
+        (SELECT preference_value FROM year_preferences WHERE preference_param = 'end_year' AND user_id = <user_id>), 3000
     )
 GROUP BY
     a.name
@@ -99,15 +99,15 @@ WHERE
     o.season = 'Summer' AND
     ae.medal != 'NA'  AND (
         t.NOC IN (
-            SELECT preference_value FROM country_preferences WHERE user_id = 1
+            SELECT preference_value FROM country_preferences WHERE user_id = <user_id>
         )
-        OR NOT EXISTS (SELECT 1 FROM country_preferences WHERE user_id = 1)
+        OR NOT EXISTS (SELECT 1 FROM country_preferences WHERE user_id = <user_id>)
     )
     AND o.year >= COALESCE(
-        (SELECT preference_value FROM year_preferences WHERE preference_param = 'start_year' AND user_id = 1), 1000
+        (SELECT preference_value FROM year_preferences WHERE preference_param = 'start_year' AND user_id = <user_id>), 1000
     )
     AND o.year <= COALESCE(
-        (SELECT preference_value FROM year_preferences WHERE preference_param = 'end_year' AND user_id = 1), 3000
+        (SELECT preference_value FROM year_preferences WHERE preference_param = 'end_year' AND user_id = <user_id>), 3000
     )
 GROUP BY
     t.NOC
@@ -140,15 +140,15 @@ WHERE
     s.name = 'Swimming'
     AND (
         t.NOC IN (
-            SELECT preference_value FROM country_preferences WHERE user_id = 1
+            SELECT preference_value FROM country_preferences WHERE user_id = <user_id>
         )
-        OR NOT EXISTS (SELECT 1 FROM country_preferences WHERE user_id = 1)
+        OR NOT EXISTS (SELECT 1 FROM country_preferences WHERE user_id = <user_id>)
     )
     AND o.year >= COALESCE(
-        (SELECT preference_value FROM year_preferences WHERE preference_param = 'start_year' AND user_id = 1), 1000
+        (SELECT preference_value FROM year_preferences WHERE preference_param = 'start_year' AND user_id = <user_id>), 1000
     )
     AND o.year <= COALESCE(
-        (SELECT preference_value FROM year_preferences WHERE preference_param = 'end_year' AND user_id = 1), 3000
+        (SELECT preference_value FROM year_preferences WHERE preference_param = 'end_year' AND user_id = <user_id>), 3000
     )
 GROUP BY
     a.name
@@ -178,15 +178,15 @@ WHERE
     ae.medal = 'Gold'
     AND (
         t.NOC IN (
-            SELECT preference_value FROM country_preferences WHERE user_id = 1
+            SELECT preference_value FROM country_preferences WHERE user_id = <user_id>
         )
-        OR NOT EXISTS (SELECT 1 FROM country_preferences WHERE user_id = 1)
+        OR NOT EXISTS (SELECT 1 FROM country_preferences WHERE user_id = <user_id>)
     )
     AND o.year >= COALESCE(
-        (SELECT preference_value FROM year_preferences WHERE preference_param = 'start_year' AND user_id = 1), 1000
+        (SELECT preference_value FROM year_preferences WHERE preference_param = 'start_year' AND user_id = <user_id>), 1000
     )
     AND o.year <= COALESCE(
-        (SELECT preference_value FROM year_preferences WHERE preference_param = 'end_year' AND user_id = 1), 3000
+        (SELECT preference_value FROM year_preferences WHERE preference_param = 'end_year' AND user_id = <user_id>), 3000
     )
 GROUP BY
     a.name,
@@ -229,15 +229,15 @@ FROM (
             ae.medal != 'NA'
             AND (
                 t.NOC IN (
-                    SELECT preference_value FROM country_preferences WHERE user_id = 1
+                    SELECT preference_value FROM country_preferences WHERE user_id = <user_id>
                 )
-                OR NOT EXISTS (SELECT 1 FROM country_preferences WHERE user_id = 1)
+                OR NOT EXISTS (SELECT 1 FROM country_preferences WHERE user_id = <user_id>)
             )
             AND o.year >= COALESCE(
-                (SELECT preference_value FROM year_preferences WHERE preference_param = 'start_year' AND user_id = 1), 1000
+                (SELECT preference_value FROM year_preferences WHERE preference_param = 'start_year' AND user_id = <user_id>), 1000
             )
             AND o.year <= COALESCE(
-                (SELECT preference_value FROM year_preferences WHERE preference_param = 'end_year' AND user_id = 1), 3000
+                (SELECT preference_value FROM year_preferences WHERE preference_param = 'end_year' AND user_id = <user_id>), 3000
             )
         GROUP BY
             a.name,
@@ -270,22 +270,22 @@ WHERE
     ae.medal != 'NA' AND
     (
         t.NOC IN (
-          SELECT preference_value FROM country_preferences WHERE user_id = 1
+          SELECT preference_value FROM country_preferences WHERE user_id = <user_id>
         )
-        OR NOT EXISTS (SELECT 1 FROM country_preferences WHERE user_id = 1)
+        OR NOT EXISTS (SELECT 1 FROM country_preferences WHERE user_id = <user_id>)
     )  AND
 
     o.year >= COALESCE(
-        (SELECT preference_value FROM year_preferences WHERE preference_param = 'start_year' and user_id = 1), 1000
+        (SELECT preference_value FROM year_preferences WHERE preference_param = 'start_year' and user_id = <user_id>), 1000
     ) AND
     o.year <= COALESCE(
-        (SELECT preference_value FROM year_preferences WHERE preference_param = 'end_year' and user_id = 1), 3000
+        (SELECT preference_value FROM year_preferences WHERE preference_param = 'end_year' and user_id = <user_id>), 3000
     ) AND
     (
         e.sport_id IN (
-          SELECT preference_value FROM sports_preferences WHERE user_id = 1
+          SELECT preference_value FROM sports_preferences WHERE user_id = <user_id>
         )
-        OR NOT EXISTS (SELECT 1 FROM sports_preferences WHERE user_id = 1)
+        OR NOT EXISTS (SELECT 1 FROM sports_preferences WHERE user_id = <user_id>)
     )
 
 GROUP BY
@@ -319,21 +319,21 @@ WHERE
     ae.medal != 'NA' AND
     (
         t.NOC IN (
-            SELECT preference_value FROM country_preferences WHERE  user_id = 2
+            SELECT preference_value FROM country_preferences WHERE  user_id = <user_id>
         )
-        OR NOT EXISTS (SELECT 1 FROM country_preferences WHERE user_id = 2)
+        OR NOT EXISTS (SELECT 1 FROM country_preferences WHERE user_id = <user_id>)
     )  AND
     o.year >= COALESCE(
-        (SELECT preference_value FROM year_preferences WHERE preference_param = 't.start_year' AND user_id = 2), 1000
+        (SELECT preference_value FROM year_preferences WHERE preference_param = 't.start_year' AND user_id = <user_id>), 1000
     ) AND
     o.year <= COALESCE(
-        (SELECT preference_value FROM year_preferences WHERE preference_param = 't.end_year' AND user_id = 2), 3000
+        (SELECT preference_value FROM year_preferences WHERE preference_param = 't.end_year' AND user_id = <user_id>), 3000
     ) AND
     (
         e.sport_id IN (
-            SELECT preference_value FROM sports_preferences WHERE  user_id = 2
+            SELECT preference_value FROM sports_preferences WHERE  user_id = <user_id>
         )
-        OR NOT EXISTS (SELECT 1 FROM sports_preferences WHERE user_id = 2)
+        OR NOT EXISTS (SELECT 1 FROM sports_preferences WHERE user_id = <user_id>)
     )
 GROUP BY
     t.NOC
@@ -371,15 +371,15 @@ FROM (
         ae.medal = 'Gold' AND
     (
         t.NOC IN (
-            SELECT preference_value FROM country_preferences WHERE  user_id = 1
+            SELECT preference_value FROM country_preferences WHERE  user_id = <user_id>
         )
-        OR NOT EXISTS (SELECT 1 FROM country_preferences WHERE user_id = 1)
+        OR NOT EXISTS (SELECT 1 FROM country_preferences WHERE user_id = <user_id>)
     )  AND
     o.year >= COALESCE(
-        (SELECT preference_value FROM year_preferences WHERE preference_param = 't.start_year' AND user_id = 1), 1000
+        (SELECT preference_value FROM year_preferences WHERE preference_param = 't.start_year' AND user_id = <user_id>), 1000
     ) AND
     o.year <= COALESCE(
-        (SELECT preference_value FROM year_preferences WHERE preference_param = 't.end_year' AND user_id = 1), 3000
+        (SELECT preference_value FROM year_preferences WHERE preference_param = 't.end_year' AND user_id = <user_id>), 3000
     )
     GROUP BY
         t.NOC, o.year - (SELECT MIN(o2.year) FROM olympics AS o2 WHERE o2.olympics_id = o.olympics_id)
@@ -419,15 +419,15 @@ WHERE
     )
     AND (
         t.NOC IN (
-            SELECT preference_value FROM country_preferences WHERE user_id = 2
+            SELECT preference_value FROM country_preferences WHERE user_id = <user_id>
         )
-        OR NOT EXISTS (SELECT 1 FROM country_preferences WHERE user_id = 2)
+        OR NOT EXISTS (SELECT 1 FROM country_preferences WHERE user_id = <user_id>)
     )
     AND o.year >= COALESCE(
-        (SELECT preference_value FROM year_preferences WHERE preference_param = 't.start_year' AND user_id = 2), 1000
+        (SELECT preference_value FROM year_preferences WHERE preference_param = 't.start_year' AND user_id = <user_id>), 1000
     )
     AND o.year <= COALESCE(
-        (SELECT preference_value FROM year_preferences WHERE preference_param = 't.end_year' AND user_id = 2), 3000
+        (SELECT preference_value FROM year_preferences WHERE preference_param = 't.end_year' AND user_id = <user_id>), 3000
     )
 GROUP BY
     a.name
@@ -457,21 +457,21 @@ WHERE
     ae.medal = 'Gold' AND
     (
         t.NOC IN (
-            SELECT preference_value FROM country_preferences WHERE user_id = 1
+            SELECT preference_value FROM country_preferences WHERE user_id = <user_id>
         )
-        OR NOT EXISTS (SELECT 1 FROM country_preferences WHERE user_id = 1)
+        OR NOT EXISTS (SELECT 1 FROM country_preferences WHERE user_id = <user_id>)
     )  AND
     o.year >= COALESCE(
-        (SELECT preference_value FROM year_preferences WHERE preference_param = 't.start_year' AND user_id = 1), 1000
+        (SELECT preference_value FROM year_preferences WHERE preference_param = 't.start_year' AND user_id = <user_id>), 1000
     ) AND
     o.year <= COALESCE(
-        (SELECT preference_value FROM year_preferences WHERE preference_param = 't.end_year' AND user_id = 1), 3000
+        (SELECT preference_value FROM year_preferences WHERE preference_param = 't.end_year' AND user_id = <user_id>), 3000
     ) AND
     (
         e.sport_id IN (
-            SELECT preference_value FROM sports_preferences WHERE user_id = 1
+            SELECT preference_value FROM sports_preferences WHERE user_id = <user_id>
         )
-        OR NOT EXISTS (SELECT 1 FROM sports_preferences WHERE user_id = 1)
+        OR NOT EXISTS (SELECT 1 FROM sports_preferences WHERE user_id = <user_id>)
     )
 GROUP BY
     t.NOC
@@ -500,15 +500,15 @@ WHERE
     a.sex = 'F'
     AND (
         t.NOC IN (
-            SELECT preference_value FROM country_preferences WHERE user_id = 2
+            SELECT preference_value FROM country_preferences WHERE user_id = <user_id>
         )
-        OR NOT EXISTS (SELECT 1 FROM country_preferences WHERE user_id = 2)
+        OR NOT EXISTS (SELECT 1 FROM country_preferences WHERE user_id = <user_id>)
     )
     AND (
         e.sport_id IN (
-            SELECT preference_value FROM sports_preferences WHERE user_id = 2
+            SELECT preference_value FROM sports_preferences WHERE user_id = <user_id>
         )
-        OR NOT EXISTS (SELECT 1 FROM sports_preferences WHERE user_id = 2)
+        OR NOT EXISTS (SELECT 1 FROM sports_preferences WHERE user_id = <user_id>)
     )
 GROUP BY
     t.NOC
@@ -539,15 +539,15 @@ WHERE
     ae.height IS NOT NULL
     AND (
         t.NOC IN (
-            SELECT preference_value FROM country_preferences WHERE user_id = 2
+            SELECT preference_value FROM country_preferences WHERE user_id = <user_id>
         )
-        OR NOT EXISTS (SELECT 1 FROM country_preferences WHERE user_id = 2)
+        OR NOT EXISTS (SELECT 1 FROM country_preferences WHERE user_id = <user_id>)
     )
     AND (
         e.sport_id IN (
-            SELECT preference_value FROM sports_preferences WHERE user_id = 2
+            SELECT preference_value FROM sports_preferences WHERE user_id = <user_id>
         )
-        OR NOT EXISTS (SELECT 1 FROM sports_preferences WHERE user_id = 2)
+        OR NOT EXISTS (SELECT 1 FROM sports_preferences WHERE user_id = <user_id>)
     )
 GROUP BY
     a.name, t.NOC
@@ -577,15 +577,15 @@ WHERE
     ae.weight IS NOT NULL
     AND (
         t.NOC IN (
-            SELECT preference_value FROM country_preferences WHERE user_id = 2
+            SELECT preference_value FROM country_preferences WHERE user_id = <user_id>
         )
-        OR NOT EXISTS (SELECT 1 FROM country_preferences WHERE user_id = 2)
+        OR NOT EXISTS (SELECT 1 FROM country_preferences WHERE user_id = <user_id>)
     )
     AND (
         e.sport_id IN (
-            SELECT preference_value FROM sports_preferences WHERE user_id = 2
+            SELECT preference_value FROM sports_preferences WHERE user_id = <user_id>
         )
-        OR NOT EXISTS (SELECT 1 FROM sports_preferences WHERE user_id = 2)
+        OR NOT EXISTS (SELECT 1 FROM sports_preferences WHERE user_id = <user_id>)
     )
 GROUP BY
     a.name, t.NOC
@@ -615,15 +615,15 @@ WHERE
     ae.age IS NOT NULL
     AND (
         t.NOC IN (
-            SELECT preference_value FROM country_preferences WHERE user_id = 2
+            SELECT preference_value FROM country_preferences WHERE user_id = <user_id>
         )
-        OR NOT EXISTS (SELECT 1 FROM country_preferences WHERE user_id = 2)
+        OR NOT EXISTS (SELECT 1 FROM country_preferences WHERE user_id = <user_id>)
     )
     AND (
         e.sport_id IN (
-            SELECT preference_value FROM sports_preferences WHERE user_id = 2
+            SELECT preference_value FROM sports_preferences WHERE user_id = <user_id>
         )
-        OR NOT EXISTS (SELECT 1 FROM sports_preferences WHERE user_id = 2)
+        OR NOT EXISTS (SELECT 1 FROM sports_preferences WHERE user_id = <user_id>)
     )
 GROUP BY
     a.name, t.NOC

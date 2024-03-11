@@ -30,3 +30,12 @@ def submit_answer():
 
     return render_template('question.html', question=q.text, answers=q.answers, user_id=user_id,
                            correct_answer=q.correct_answer, submitted_answer=selected_answer, user_has_answered=True)
+
+
+def end_game():
+    user_score = 100  # User's final score
+    correct_answers_count = 5  # How many answers were correct
+    total_questions = 10  # Total questions answered
+
+    return render_template('end_game.html', user_name="John Doe", user_score=user_score,
+                           correct_answers_count=correct_answers_count, total_questions=total_questions)

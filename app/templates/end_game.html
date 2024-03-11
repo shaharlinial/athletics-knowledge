@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+{% extends "base.html" %}
+
+{% block title %}Game Over{% endblock %}
+
+{% block content %}
+<body>
+    <div class="content-wrapper">
+        <h1 class="page-title">Game Over</h1>
+        <div class="score-summary">
+            <p>Congratulations, {{ user_name }}!</p>
+            <p>Your final score is: {{ user_score }}</p>
+            <p>You answered {{ correct_answers_count }} out of {{ total_questions }} questions correctly!</p>
+        </div>
+        <a href="/api/question" class="next-game-button">Try Again</a>
+        <a href="/" class="home-button">Home</a>
+    </div>
+{% endblock %}
+</body>
+</html>

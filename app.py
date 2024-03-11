@@ -12,6 +12,7 @@ web_app.add_url_rule('/api/leaderboard', view_func=views.leaderboard.get_leaderb
 web_app.add_url_rule('/api/preferences', methods=['POST'], view_func=views.preferences.set_preferences)
 web_app.add_url_rule('/api/preferences', methods=['GET'], view_func=views.preferences.get_preferences)
 web_app.add_url_rule('/api/question', methods=['GET'], view_func=views.questions.get_question)
+web_app.add_url_rule('/end_game', view_func=views.questions.end_game)
 web_app.add_url_rule('/api/submit_answer', methods=['POST'], view_func=views.questions.submit_answer)
 web_app.add_url_rule('/signup', methods=['GET', 'POST'], view_func=views.login.signup)
 web_app.add_url_rule('/login',  methods=['GET', 'POST'], view_func=views.login.login)
