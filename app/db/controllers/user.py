@@ -33,7 +33,7 @@ class UserController(base_controller.BaseController):
             user_name: str
     ) -> entities.User:
 
-        select_user_query = f"SELECT user_id, user_name, first_name, last_name, hashed_password, points FROM users where user_name = '{user_name}'"
+        select_user_query = f"SELECT user_id, user_name, first_name, last_name, hashed_password FROM users where user_name = '{user_name}'"
         try:
             result = self.db.fetch_data(select_user_query)[0]
         except Exception:
@@ -69,7 +69,7 @@ class UserController(base_controller.BaseController):
             user_id: int
     ) -> entities.User:
 
-        select_user_query = f"SELECT user_id, user_name, first_name, last_name, hashed_password, points FROM users where user_id = '{user_id}'"
+        select_user_query = f"SELECT user_id, user_name, first_name, last_name, hashed_password FROM users where user_id = '{user_id}'"
         try:
             result = self.db.fetch_data(select_user_query)[0]
         except Exception:

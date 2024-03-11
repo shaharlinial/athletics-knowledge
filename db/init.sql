@@ -56,7 +56,6 @@ CREATE TABLE `users` (
     hashed_password VARCHAR(255) NOT NULL,
     first_name VARCHAR(50) NOT NULL,
     last_name VARCHAR(50) NOT NULL,
-    points INT DEFAULT 0,
     UNIQUE(user_name)
 );
 

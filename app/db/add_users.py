@@ -17,8 +17,7 @@ class FakeUsersCreator:
                 user_name=f"user{i}",
                 first_name=f"first{i}",
                 last_name=f"last{i}",
-                hashed_password=generate_password_hash(f"password{i}"),
-                score=random.randint(0, 100)
+                hashed_password=generate_password_hash(f"password{i}")
             )
             cursor.execute(
                 f"""

@@ -8,4 +8,3 @@ class User:
     first_name: str
     last_name: str
     hashed_password: str
-    score: int
