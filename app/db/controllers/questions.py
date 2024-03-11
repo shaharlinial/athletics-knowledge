@@ -55,6 +55,7 @@ class QuestionController(base_controller.BaseController):
             question_id, question_text = cursor.fetchone()
 
             # TODO: Shuffle Answers
+            # TODO: from NOC to country
             return entities.question.Question(
                 text=question_text,
                 id=question_id,

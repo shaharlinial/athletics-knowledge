@@ -679,7 +679,9 @@ GROUP BY
     t.NOC
 ORDER BY
     female_participations DESC
-LIMIT 4;', 'Among the [countries] participating in the [years] Olympics, which nation had the highest number of female participations?'),
+
+LIMIT 4;', 'Among [countries] participating [years] Olympics, which nation had the highest number of female participations?'),
+
 
 (10, 'SELECT
     t.NOC AS country,
