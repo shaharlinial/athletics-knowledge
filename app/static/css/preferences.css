@@ -64,3 +64,15 @@ select {
     border-radius: 5px;
     border: 1px solid #ddd;
 }
+
+.country-container {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr); /* Create four columns */
+    gap: 20px; /* Adjust the space between grid items */
+    margin-bottom: 20px; /* Space below the entire grid */
+}
+
+.country-option {
+    display: flex;
+    align-items: center; /* Align checkbox and label in the middle */
+}

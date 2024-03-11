@@ -62,3 +62,48 @@ class UserController(base_controller.BaseController):
             'last_name': res[2],
             'score': res[3]
         } for res in result]
+
+    def fetch_user_by_id(
+            self,
+            user_id: int
+    ) -> entities.User:
+
+        select_user_query = f"SELECT user_id, user_name, first_name, last_name, hashed_password, points FROM users where user_id = '{user_id}'"
+        try:
+            result = self.db.fetch_data(select_user_query)[0]
+        except Exception:
+            #  Duplicate user in database, retry please
+            return False
+
+        return entities.User(*result)
+
+    def count_user_correct_answers(self, user_id: int) -> int:
+        count_correct_answers_query = f"SELECT count(*) FROM answers where user_id = {user_id} and is_correct = 1"
+        try:
+            result = self.db.fetch_data(count_correct_answers_query)
+        except Exception:
+            #  user not found in database, retry please
+            return False
+
+        return result[0][0]
+
+    def count_user_total_answers(self, user_id: int) -> int:
+        count_total_answers_query = f"SELECT count(*) FROM answers where user_id = {user_id}"
+        try:
+            result = self.db.fetch_data(count_total_answers_query)
+        except Exception:
+            #  user not found in database, retry please
+            return False
+
+        return result[0][0]
+
+    def get_user_score(self, user_id: int) -> int:
+        user_score_query = f"SELECT sum(points) FROM answers where user_id = {user_id}"
+        try:
+            result = self.db.fetch_data(user_score_query)
+        except Exception:
+            #  user not found in database, retry please
+            return False
+
+        return result[0][0]
+

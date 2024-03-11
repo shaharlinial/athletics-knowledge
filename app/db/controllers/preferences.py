@@ -66,7 +66,7 @@ class PreferencesController(base_controller.BaseController):
         return [entities.Sport(*r) for r in results]
 
     def get_user_years_preferences(self, user_id):
-        years = {'start': None, 'end':None}
+        years = {'start': 1896, 'end':2016}
         cursor = self.db.connection.cursor()
         cursor.execute(
                 f"""

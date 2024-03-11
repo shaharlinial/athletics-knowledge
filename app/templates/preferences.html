@@ -13,8 +13,7 @@
     <h1>User Preferences</h1>
     <form action="/api/preferences" method="post">
         <input type="hidden" name="user_id" value="{{ data.user_preferences.user_id }}">
-
-        <div>
+        <div class="country-container">
             <p>Countries:</p>
             {% for country in data.available_preferences.countries %}
             <div>
@@ -42,7 +41,7 @@
             </select>
         </div>
 
-        <div>
+        <div class="country-container">
             <p>Sport Types:</p>
             {% for sport in data.available_preferences.sport_types %}
             <div>

@@ -7,14 +7,33 @@ class QuestionController(base_controller.BaseController):
     def __init__(self, sql_connection):
         super().__init__(sql_connection)
 
-    def generate_question(self, user_id) -> entities.question.Question:
+    def generate_question(self, user_id, country_preferences, sports_preferences,
+                          years_preferences) -> entities.question.Question:
+        countries = "all countries"
+        if len(country_preferences) > 0:
+            countries = ",".join([c.name for c in country_preferences])
+
+        sports = "all sports"
+        if len(sports_preferences) > 0:
+            sports = ",".join([s.name for s in sports_preferences])
+
+        years = f"between {years_preferences['start']} and {years_preferences['end']}"
+
         try:
             cursor = self.db.connection.cursor()
             cursor.execute(
-                f"""
-                select template_id, replace(template_query, '<user_id>', {user_id}), template_text INTO @question_id, @sql_txt, @sql_question from question_templates
-                where template_id = (select count(*) from answers where user_id = {user_id}) + 1;
                 """
+                select 
+                template_id,
+                replace(template_query, '<user_id>', %s), 
+                REPLACE(
+                    REPLACE(
+                        REPLACE(template_text, '[countries]', %s),
+                        '[sports]', %s),
+                    '[years]', %s)
+                INTO @question_id, @sql_txt, @sql_question from question_templates
+                where template_id = (select count(*) from answers where user_id = %s) + 1;
+                """ , (user_id, countries, sports, years , user_id)
             )
             cursor.execute(
                 """
@@ -46,14 +65,34 @@ class QuestionController(base_controller.BaseController):
         except Exception:
             raise
 
-    def get_question(self, user_id, question_id) -> entities.question.Question:
+    def get_question(self, user_id, question_id, country_preferences, sports_preferences,
+                     years_preferences) -> entities.question.Question:
+
+        countries = "all countries"
+        if len(country_preferences) > 0:
+            countries = ",".join([c.name for c in country_preferences])
+
+        sports = "all sports"
+        if len(sports_preferences) > 0:
+            sports = ",".join([s.name for s in sports_preferences])
+
+        years = f"between {years_preferences['start']} and {years_preferences['end']}"
+
         try:
             cursor = self.db.connection.cursor()
             cursor.execute(
-                f"""
-                select template_id, replace(template_query, '<user_id>', {user_id}), template_text INTO @question_id, @sql_txt, @sql_question from question_templates
-                where template_id = {question_id};
                 """
+                select 
+                template_id,
+                replace(template_query, '<user_id>', %s), 
+                REPLACE(
+                    REPLACE(
+                        REPLACE(template_text, '[countries]', %s),
+                        '[sports]', %s),
+                    '[years]', %s)
+                INTO @question_id, @sql_txt, @sql_question from question_templates
+                where template_id = (select count(*) from answers where user_id = %s) + 1;
+                """ , (user_id, countries, sports, years , user_id)
             )
             cursor.execute(
                 """
