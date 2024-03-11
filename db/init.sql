@@ -348,22 +348,569 @@ INSERT INTO countries (NOC, name) VALUES
 
 INSERT INTO `question_templates` (`template_id`, `template_query`, `template_text`)
 VALUES
-	(1, 'SELECT\n	t.NOC AS country,\n    COUNT(*) AS c\nFROM\n    athlete_events AS ae\nINNER JOIN\n    teams AS t ON t.team_id = ae.team_id\nINNER JOIN\n    events AS e ON e.event_id = ae.event_id\nINNER JOIN\n    olympics AS o ON o.olympics_id = e.olympics_id\nWHERE\n    o.season = \'Summer\' AND\n    ae.medal = \'Gold\' AND\n    (\n        t.NOC IN (\n          SELECT preference_value FROM country_preferences WHERE user_id = <user_id>\n        )\n        OR NOT EXISTS (SELECT 1 FROM country_preferences WHERE user_id = <user_id>)\n    )  AND\n\n    o.year >= COALESCE(\n        (SELECT preference_value FROM year_preferences WHERE preference_param = \'start_year\' and user_id = <user_id>), 1000\n    ) AND\n    o.year <= COALESCE(\n        (SELECT preference_value FROM year_preferences WHERE preference_param = \'end_year\' and user_id = <user_id>), 3000\n    ) AND\n    (\n        e.sport_id IN (\n          SELECT preference_value FROM sports_preferences WHERE user_id = <user_id>\n        )\n        OR NOT EXISTS (SELECT 1 FROM sports_preferences WHERE user_id = <user_id>)\n    )\n\nGROUP BY\n    t.NOC\nORDER BY\n    c DESC\n\nLIMIT 4;', 'Among the [countries], which country secured the most gold medals in the [years] Summer Olympics?'),
-	(2, 'SELECT t.NOC AS country, COUNT(*) AS c\nFROM athlete_events AS ae\nINNER JOIN teams AS t ON t.team_id = ae.team_id\nINNER JOIN events AS e ON e.event_id = ae.event_id\nINNER JOIN olympics AS o ON o.olympics_id = e.olympics_id\nWHERE\no.season = \'Summer\' AND\nae.medal = \'Gold\' AND\n(\n    t.NOC IN (\n      SELECT preference_value FROM country_preferences WHERE user_id = <user_id>\n    )\n    OR NOT EXISTS (SELECT 1 FROM country_preferences WHERE user_id = <user_id>)\n)  AND\n\no.year >= COALESCE(\n	(SELECT preference_value FROM year_preferences WHERE preference_param = \'start_year\' and user_id = <user_id>), 1000\n) AND\no.year <= COALESCE(\n	(SELECT preference_value FROM year_preferences WHERE preference_param = \'end_year\' and user_id = <user_id>), 3000\n) AND\n(\n    e.sport_id IN (\n      SELECT preference_value FROM sports_preferences WHERE user_id = <user_id>\n    )\n    OR NOT EXISTS (SELECT 1 FROM sports_preferences WHERE user_id = <user_id>)\n)\n\nGROUP BY t.NOC\nORDER BY c DESC\nLIMIT 4;\n', 'In the [years] Winter Olympics, which athlete among [countries] won the most medals across all sports?'),
-	(3, 'SELECT\n    t.NOC AS country,\n    COUNT(*) AS total_medals\nFROM\n    athlete_events AS ae\nINNER JOIN\n    teams AS t ON t.team_id = ae.team_id\nINNER JOIN\n    events AS e ON e.event_id = ae.event_id\nINNER JOIN\n    olympics AS o ON o.olympics_id = e.olympics_id\nWHERE\n    o.year = \'2000\' AND\n    o.season = \'Summer\' AND\n    ae.medal != \'NA\'  AND (\n        t.NOC IN (\n            SELECT preference_value FROM country_preferences WHERE user_id = <user_id>\n        )\n        OR NOT EXISTS (SELECT 1 FROM country_preferences WHERE user_id = <user_id>)\n    )\n    AND o.year >= COALESCE(\n        (SELECT preference_value FROM year_preferences WHERE preference_param = \'start_year\' AND user_id = <user_id>), 1000\n    )\n    AND o.year <= COALESCE(\n        (SELECT preference_value FROM year_preferences WHERE preference_param = \'end_year\' AND user_id = <user_id>), 3000\n    )\nGROUP BY\n    t.NOC\nORDER BY\n    total_medals DESC\nLIMIT 4;', 'Among the [countries] in the [years] Summer Olympics, which nation topped the medal tally in [sports]?'),
-    (4, 'SELECT\n t.NOC AS country,\n COUNT(*) AS gold_medals\nFROM\n athlete_events AS ae\nINNER JOIN\n teams AS t ON t.team_id = ae.team_id\nINNER JOIN\n events AS e ON e.event_id = ae.event_id\nINNER JOIN\n olympics AS o ON o.olympics_id = e.olympics_id\nINNER JOIN\n athletes AS a ON a.athlete_id = ae.athlete_id\nINNER JOIN\n sports AS s ON s.sport_id = e.sport_id\nWHERE\n ae.medal = 'Gold\' AND\n s.name = 'Swimming\' AND\n (\n t.NOC IN (\n SELECT preference_value FROM country_preferences WHERE user_id = <user_id>\n )\n OR NOT EXISTS (SELECT 1 FROM country_preferences WHERE user_id = <user_id>)\n )\n AND o.year >= COALESCE(\n (SELECT preference_value FROM year_preferences WHERE preference_param = 'start_year' AND user_id = <user_id>), 1000\n )\n AND o.year <= COALESCE(\n (SELECT preference_value FROM year_preferences WHERE preference_param = 'end_year' AND user_id = <user_id>), 3000\n )\nGROUP BY\n t.NOC\nORDER BY\n gold_medals DESC\nLIMIT 4;', 'Among the [countries] which swimmer won the most gold medals in the [years] Olympics?'),
-	(5, 'SELECT\n    t.NOC AS country,\n    SUM(CASE WHEN o.season = \'Winter\' THEN 1 ELSE 0 END) AS winter_medals,\n    SUM(CASE WHEN o.season = \'Summer\' THEN 1 ELSE 0 END) AS summer_medals,\n    ROUND(\n        SUM(CASE WHEN o.season = \'Winter\' THEN 1 ELSE 0 END) /\n        SUM(CASE WHEN o.season = \'Summer\' THEN 1 ELSE 0 END),\n        2\n    ) AS winter_to_summer_ratio\nFROM\n    athlete_events AS ae\nINNER JOIN\n    teams AS t ON t.team_id = ae.team_id\nINNER JOIN\n    events AS e ON e.event_id = ae.event_id\nINNER JOIN\n    olympics AS o ON o.olympics_id = e.olympics_id\nINNER JOIN\n    athletes AS a ON a.athlete_id = ae.athlete_id\nWHERE\n    ae.medal != \'NA\' AND\n    (\n        t.NOC IN (\n            SELECT preference_value FROM country_preferences WHERE  user_id = 2\n        )\n        OR NOT EXISTS (SELECT 1 FROM country_preferences WHERE user_id = 2)\n    )  AND\n    o.year >= COALESCE(\n        (SELECT preference_value FROM year_preferences WHERE preference_param = \'t.start_year\' AND user_id = 2), 1000\n    ) AND\n    o.year <= COALESCE(\n        (SELECT preference_value FROM year_preferences WHERE preference_param = \'t.end_year\' AND user_id = 2), 3000\n    ) AND\n    (\n        e.sport_id IN (\n            SELECT preference_value FROM sports_preferences WHERE  user_id = 2\n        )\n        OR NOT EXISTS (SELECT 1 FROM sports_preferences WHERE user_id = 2)\n    )\nGROUP BY\n    t.NOC\nHAVING\n    SUM(CASE WHEN o.season = \'Summer\' THEN 1 ELSE 0 END) > 0\n    AND SUM(CASE WHEN o.season = \'Winter\' THEN 1 ELSE 0 END) > 0 -- Remove countries with no summer or winter medals\nORDER BY\n    winter_to_summer_ratio ASC\nLIMIT 4;', 'Which of the [countries] have the lowest ratio winter to summer medals?');
-	(6, 'SELECT\n    t.NOC AS country,\n    SUM(CASE WHEN o.season = \'Winter\' THEN 1 ELSE 0 END) AS winter_medals,\n    SUM(CASE WHEN o.season = \'Summer\' THEN 1 ELSE 0 END) AS summer_medals,\n    ROUND(\n        SUM(CASE WHEN o.season = \'Winter\' THEN 1 ELSE 0 END) /\n        SUM(CASE WHEN o.season = \'Summer\' THEN 1 ELSE 0 END),\n        2\n    ) AS winter_to_summer_ratio\nFROM\n    athlete_events AS ae\nINNER JOIN\n    teams AS t ON t.team_id = ae.team_id\nINNER JOIN\n    events AS e ON e.event_id = ae.event_id\nINNER JOIN\n    olympics AS o ON o.olympics_id = e.olympics_id\nINNER JOIN\n    athletes AS a ON a.athlete_id = ae.athlete_id\nWHERE\n    ae.medal != \'NA\' AND\n    (\n        t.NOC IN (\n            SELECT preference_value FROM country_preferences WHERE  user_id = 2\n        )\n        OR NOT EXISTS (SELECT 1 FROM country_preferences WHERE user_id = 2)\n    )  AND\n    o.year >= COALESCE(\n        (SELECT preference_value FROM year_preferences WHERE preference_param = \'t.start_year\' AND user_id = 2), 1000\n    ) AND\n    o.year <= COALESCE(\n        (SELECT preference_value FROM year_preferences WHERE preference_param = \'t.end_year\' AND user_id = 2), 3000\n    ) AND\n    (\n        e.sport_id IN (\n            SELECT preference_value FROM sports_preferences WHERE  user_id = 2\n        )\n        OR NOT EXISTS (SELECT 1 FROM sports_preferences WHERE user_id = 2)\n    )\nGROUP BY\n    t.NOC\nHAVING\n    SUM(CASE WHEN o.season = \'Summer\' THEN 1 ELSE 0 END) > 0\n    AND SUM(CASE WHEN o.season = \'Winter\' THEN 1 ELSE 0 END) > 0 -- Remove countries with no summer or winter medals\nORDER BY\n    winter_to_summer_ratio DESC\nLIMIT 4;', 'Which of the [countries] have the highest ratio winter to summer medals?');
-    (7, 'SELECT\n t.NOC AS country,\n COUNT(*) AS female_gold_medallists\nFROM\n athlete_events AS ae\nINNER JOIN\n teams AS t ON t.team_id = ae.team_id\nINNER JOIN\n events AS e ON e.event_id = ae.event_id\nINNER JOIN\n olympics AS o ON o.olympics_id = e.olympics_id\nINNER JOIN\n athletes AS a ON a.athlete_id = ae.athlete_id\nWHERE\n a.sex = 'F' AND\n ae.medal = 'Gold\' AND (\n t.NOC IN (\n SELECT preference_value FROM country_preferences WHERE user_id = <user_id>\n )\n OR NOT EXISTS (SELECT 1 FROM country_preferences WHERE user_id = <user_id>)\n ) AND\n o.year >= COALESCE(\n (SELECT preference_value FROM year_preferences WHERE preference_param = 't.start_year' AND user_id = <user_id>), 1000\n ) AND\n o.year <= COALESCE(\n (SELECT preference_value FROM year_preferences WHERE preference_param = 't.end_year' AND user_id = <user_id>), 3000\n ) AND\n (\n e.sport_id IN (\n SELECT preference_value FROM sports_preferences WHERE user_id = <user_id>\n )\n OR NOT EXISTS (SELECT 1 FROM sports_preferences WHERE user_id = <user_id>)\n )\nGROUP BY\n t.NOC\nORDER BY\n female_gold_medallists DESC\nLIMIT 4;', 'Among the [countries] participating in the [years] Olympics, which nation had the highest number of female gold medallists?')
-    (8, 'SELECT\n	t.NOC AS country,\n    COUNT(*) AS c\nFROM\n    athlete_events AS ae\nINNER JOIN\n    teams AS t ON t.team_id = ae.team_id\nINNER JOIN\n    events AS e ON e.event_id = ae.event_id\nINNER JOIN\n    olympics AS o ON o.olympics_id = e.olympics_id\nWHERE\n    o.season = \'Winter\' AND\n    ae.medal = \'Gold\' AND\n    (\n        t.NOC IN (\n          SELECT preference_value FROM country_preferences WHERE user_id = <user_id>\n        )\n        OR NOT EXISTS (SELECT 1 FROM country_preferences WHERE user_id = <user_id>)\n    )  AND\n\n    o.year >= COALESCE(\n        (SELECT preference_value FROM year_preferences WHERE preference_param = \'start_year\' and user_id = <user_id>), 1000\n    ) AND\n    o.year <= COALESCE(\n        (SELECT preference_value FROM year_preferences WHERE preference_param = \'end_year\' and user_id = <user_id>), 3000\n    ) AND\n    (\n        e.sport_id IN (\n          SELECT preference_value FROM sports_preferences WHERE user_id = <user_id>\n        )\n        OR NOT EXISTS (SELECT 1 FROM sports_preferences WHERE user_id = <user_id>)\n    )\n\nGROUP BY\n    t.NOC\nORDER BY\n    c DESC\n\nLIMIT 4;', 'Among the [countries], which country secured the most gold medals in the [years] Winter Olympics?'),
-    (9, 'SELECT\n t.NOC AS country,\n COUNT(*) AS female_participations\nFROM\n athlete_events AS ae\nINNER JOIN\n teams AS t ON t.team_id = ae.team_id\nINNER JOIN\n events AS e ON e.event_id = ae.event_id\nINNER JOIN\n olympics AS o ON o.olympics_id = e.olympics_id\nINNER JOIN\n athletes AS a ON a.athlete_id = ae.athlete_id\nWHERE\n a.sex = 'F'\n AND (\n t.NOC IN (\n SELECT preference_value FROM country_preferences WHERE user_id = <user_id>\n )\n OR NOT EXISTS (SELECT 1 FROM country_preferences WHERE user_id = <user_id>)\n )\n AND (\n e.sport_id IN (\n SELECT preference_value FROM sports_preferences WHERE user_id = <user_id>\n )\n OR NOT EXISTS (SELECT 1 FROM sports_preferences WHERE user_id = <user_id>)\n )\nGROUP BY\n t.NOC\nORDER BY\n female_participations DESC\nLIMIT 4;', 'Among the [countries] participating in the [year] Olympics, which nation had the highest number of female participations?')
-    (10, 'SELECT\n t.NOC AS country,\n MAX(ae.height) AS athlete_height\nFROM\n athlete_events AS ae\nINNER JOIN\n teams AS t ON t.team_id = ae.team_id\nINNER JOIN\n events AS e ON e.event_id = ae.event_id\nINNER JOIN\n olympics AS o ON o.olympics_id = e.olympics_id\nINNER JOIN\n athletes AS a ON a.athlete_id = ae.athlete_id\nWHERE\n ae.height IS NOT NULL\n AND (\n t.NOC IN (\n SELECT preference_value FROM country_preferences WHERE user_id = <user_id>\n )\n OR NOT EXISTS (SELECT 1 FROM country_preferences WHERE user_id = <user_id>)\n )\n AND (\n e.sport_id IN (\n SELECT preference_value FROM sports_preferences WHERE user_id = <user_id>\n )\n OR NOT EXISTS (SELECT 1 FROM sports_preferences WHERE user_id = <user_id>)\n )\nGROUP BY\n a.name, t.NOC\nORDER BY\n MAX(ae.height) ASC\nLIMIT 4;', 'Among the [countries] participating in [sports], which country had the shortest athlete (in cm) of all time?')
-    (11, 'SELECT\n t.NOC AS country,\n MAX(ae.height) AS athlete_height\nFROM\n athlete_events AS ae\nINNER JOIN\n teams AS t ON t.team_id = ae.team_id\nINNER JOIN\n events AS e ON e.event_id = ae.event_id\nINNER JOIN\n olympics AS o ON o.olympics_id = e.olympics_id\nINNER JOIN\n athletes AS a ON a.athlete_id = ae.athlete_id\nWHERE\n ae.height IS NOT NULL\n AND (\n t.NOC IN (\n SELECT preference_value FROM country_preferences WHERE user_id = <user_id>\n )\n OR NOT EXISTS (SELECT 1 FROM country_preferences WHERE user_id = <user_id>)\n )\n AND (\n e.sport_id IN (\n SELECT preference_value FROM sports_preferences WHERE user_id = <user_id>\n )\n OR NOT EXISTS (SELECT 1 FROM sports_preferences WHERE user_id = <user_id>)\n )\nGROUP BY\n a.name, t.NOC\nORDER BY\n MAX(ae.height) DESC\nLIMIT 4;', 'Among the [countries] participating in [sports], which country had the tallest athlete (in cm) of all time?')
-    (12, 'SELECT\n t.NOC AS country,\n MAX(ae.weight) AS athlete_weight\nFROM\n athlete_events AS ae\nINNER JOIN\n teams AS t ON t.team_id = ae.team_id\nINNER JOIN\n events AS e ON e.event_id = ae.event_id\nINNER JOIN\n olympics AS o ON o.olympics_id = e.olympics_id\nINNER JOIN\n athletes AS a ON a.athlete_id = ae.athlete_id\nWHERE\n ae.weight IS NOT NULL\n AND (\n t.NOC IN (\n SELECT preference_value FROM country_preferences WHERE user_id = <user_id>\n )\n OR NOT EXISTS (SELECT 1 FROM country_preferences WHERE user_id = <user_id>)\n )\n AND (\n e.sport_id IN (\n SELECT preference_value FROM sports_preferences WHERE user_id = <user_id>\n )\n OR NOT EXISTS (SELECT 1 FROM sports_preferences WHERE user_id = <user_id>)\n )\nGROUP BY\n a.name, t.NOC\nORDER BY\n MAX(ae.weight) DESC\nLIMIT 4;', 'Among the [countries] participating in [sports] Olympics, which athlete had the highest weight of all time?')
-    (13, 'SELECT\n t.NOC AS country,\n MAX(ae.weight) AS athlete_weight\nFROM\n athlete_events AS ae\nINNER JOIN\n teams AS t ON t.team_id = ae.team_id\nINNER JOIN\n events AS e ON e.event_id = ae.event_id\nINNER JOIN\n olympics AS o ON o.olympics_id = e.olympics_id\nINNER JOIN\n athletes AS a ON a.athlete_id = ae.athlete_id\nWHERE\n ae.weight IS NOT NULL\n AND (\n t.NOC IN (\n SELECT preference_value FROM country_preferences WHERE user_id = <user_id>\n )\n OR NOT EXISTS (SELECT 1 FROM country_preferences WHERE user_id = <user_id>)\n )\n AND (\n e.sport_id IN (\n SELECT preference_value FROM sports_preferences WHERE user_id = <user_id>\n )\n OR NOT EXISTS (SELECT 1 FROM sports_preferences WHERE user_id = <user_id>)\n )\nGROUP BY\n a.name, t.NOC\nORDER BY\n MAX(ae.weight) ASC\nLIMIT 4;', 'Among the [countries] participating in [sports] Olympics, which athlete had the lowest weight of all time?')
-    (14, 'SELECT\n t.NOC AS country,\n MIN(ae.age) AS athlete_age\nFROM\n athlete_events AS ae\nINNER JOIN\n teams AS t ON t.team_id = ae.team_id\nINNER JOIN\n events AS e ON e.event_id = ae.event_id\nINNER JOIN\n olympics AS o ON o.olympics_id = e.olympics_id\nINNER JOIN\n athletes AS a ON a.athlete_id = ae.athlete_id\nWHERE\n ae.age IS NOT NULL\n AND (\n t.NOC IN (\n SELECT preference_value FROM country_preferences WHERE user_id = <user_id>\n )\n OR NOT EXISTS (SELECT 1 FROM country_preferences WHERE user_id = <user_id>)\n )\n AND (\n e.sport_id IN (\n SELECT preference_value FROM sports_preferences WHERE user_id = <user_id>\n )\n OR NOT EXISTS (SELECT 1 FROM sports_preferences WHERE user_id = <user_id>)\n )\nGROUP BY\n a.name, t.NOC\nORDER BY\n MIN(ae.age) ASC\nLIMIT 4;', 'Among the [countries] participating in [sports] Olympics, which nation had the youngest athlete of all time?')
-    (15, 'SELECT\n t.NOC AS country,\n MIN(ae.age) AS athlete_age\nFROM\n athlete_events AS ae\nINNER JOIN\n teams AS t ON t.team_id = ae.team_id\nINNER JOIN\n events AS e ON e.event_id = ae.event_id\nINNER JOIN\n olympics AS o ON o.olympics_id = e.olympics_id\nINNER JOIN\n athletes AS a ON a.athlete_id = ae.athlete_id\nWHERE\n ae.age IS NOT NULL\n AND (\n t.NOC IN (\n SELECT preference_value FROM country_preferences WHERE user_id = <user_id>\n )\n OR NOT EXISTS (SELECT 1 FROM country_preferences WHERE user_id = <user_id>)\n )\n AND (\n e.sport_id IN (\n SELECT preference_value FROM sports_preferences WHERE user_id = <user_id>\n )\n OR NOT EXISTS (SELECT 1 FROM sports_preferences WHERE user_id = <user_id>)\n )\nGROUP BY\n a.name, t.NOC\nORDER BY\n MIN(ae.age) DESC\nLIMIT 4;', 'Among the [countries] participating in [sports] Olympics, which nation had the oldest athlete of all time?')
+    (1, 'SELECT
+    t.NOC AS country,
+    COUNT(*) AS c
+FROM
+    athlete_events AS ae
+INNER JOIN
+    teams AS t ON t.team_id = ae.team_id
+INNER JOIN
+    events AS e ON e.event_id = ae.event_id
+INNER JOIN
+    olympics AS o ON o.olympics_id = e.olympics_id
+WHERE
+    o.season = \'Summer\' AND
+    ae.medal = \'Gold\' AND
+    (
+        t.NOC IN (
+            SELECT preference_value FROM country_preferences WHERE user_id = <user_id>
+        )
+        OR NOT EXISTS (SELECT 1 FROM country_preferences WHERE user_id = <user_id>)
+    )
+    AND o.year >= COALESCE(
+        (SELECT preference_value FROM year_preferences WHERE preference_param = \'start_year\' AND user_id = <user_id>), 1000
+    )
+    AND o.year <= COALESCE(
+        (SELECT preference_value FROM year_preferences WHERE preference_param = \'end_year\' AND user_id = <user_id>), 3000
+    )
+    AND (
+        e.sport_id IN (
+            SELECT preference_value FROM sports_preferences WHERE user_id = <user_id>
+        )
+        OR NOT EXISTS (SELECT 1 FROM sports_preferences WHERE user_id = <user_id>)
+    )
+GROUP BY
+    t.NOC
+ORDER BY
+    c DESC
+LIMIT 4;', 'Among the [countries], which country secured the most gold medals in the [years] Summer Olympics?'),
 
+(2, 'SELECT
+    t.NOC AS country,
+    COUNT(*) AS c
+FROM
+    athlete_events AS ae
+INNER JOIN
+    teams AS t ON t.team_id = ae.team_id
+INNER JOIN
+    events AS e ON e.event_id = ae.event_id
+INNER JOIN
+    olympics AS o ON o.olympics_id = e.olympics_id
+WHERE
+    o.season = \'Summer\' AND
+    ae.medal = \'Gold\' AND
+    (
+        t.NOC IN (
+            SELECT preference_value FROM country_preferences WHERE user_id = <user_id>
+        )
+        OR NOT EXISTS (SELECT 1 FROM country_preferences WHERE user_id = <user_id>)
+    )
+    AND o.year >= COALESCE(
+        (SELECT preference_value FROM year_preferences WHERE preference_param = \'start_year\' AND user_id = <user_id>), 1000
+    )
+    AND o.year <= COALESCE(
+        (SELECT preference_value FROM year_preferences WHERE preference_param = \'end_year\' AND user_id = <user_id>), 3000
+    )
+    AND (
+        e.sport_id IN (
+            SELECT preference_value FROM sports_preferences WHERE user_id = <user_id>
+        )
+        OR NOT EXISTS (SELECT 1 FROM sports_preferences WHERE user_id = <user_id>)
+    )
+GROUP BY
+    t.NOC
+ORDER BY
+    c DESC
+LIMIT 4;', 'In the [years] Winter Olympics, which athlete among [countries] won the most medals across all sports?'),
+
+(3, 'SELECT
+    t.NOC AS country,
+    COUNT(*) AS total_medals
+FROM
+    athlete_events AS ae
+INNER JOIN
+    teams AS t ON t.team_id = ae.team_id
+INNER JOIN
+    events AS e ON e.event_id = ae.event_id
+INNER JOIN
+    olympics AS o ON o.olympics_id = e.olympics_id
+WHERE
+    o.year = \'2000\' AND
+    o.season = \'Summer\' AND
+    ae.medal != \'NA\' AND (
+        t.NOC IN (
+            SELECT preference_value FROM country_preferences WHERE user_id = <user_id>
+        )
+        OR NOT EXISTS (SELECT 1 FROM country_preferences WHERE user_id = <user_id>)
+    )
+    AND o.year >= COALESCE(
+        (SELECT preference_value FROM year_preferences WHERE preference_param = \'start_year\' AND user_id = <user_id>), 1000
+    )
+    AND o.year <= COALESCE(
+        (SELECT preference_value FROM year_preferences WHERE preference_param = \'end_year\' AND user_id = <user_id>), 3000
+    )
+GROUP BY
+    t.NOC
+ORDER BY
+    total_medals DESC
+LIMIT 4;', 'Among the [countries] in the [years] Summer Olympics, which nation topped the medal tally in [sports]?'),
+
+(4, 'SELECT
+    t.NOC AS country,
+    COUNT(*) AS gold_medals
+FROM
+    athlete_events AS ae
+INNER JOIN
+    teams AS t ON t.team_id = ae.team_id
+INNER JOIN
+    events AS e ON e.event_id = ae.event_id
+INNER JOIN
+    olympics AS o ON o.olympics_id = e.olympics_id
+INNER JOIN
+    athletes AS a ON a.athlete_id = ae.athlete_id
+INNER JOIN
+    sports AS s ON s.sport_id = e.sport_id
+WHERE
+    ae.medal = \'Gold\' AND
+    s.name = \'Swimming\' AND
+    (
+        t.NOC IN (
+            SELECT preference_value FROM country_preferences WHERE user_id = <user_id>
+        )
+        OR NOT EXISTS (SELECT 1 FROM country_preferences WHERE user_id = <user_id>)
+    )
+    AND o.year >= COALESCE(
+        (SELECT preference_value FROM year_preferences WHERE preference_param = \'start_year\' AND user_id = <user_id>), 1000
+    )
+    AND o.year <= COALESCE(
+        (SELECT preference_value FROM year_preferences WHERE preference_param = \'end_year\' AND user_id = <user_id>), 3000
+    )
+GROUP BY
+    t.NOC
+ORDER BY
+    gold_medals DESC
+LIMIT 4;', 'Among the [countries] which swimmer won the most gold medals in the [years] Olympics?'),
+
+(5, 'SELECT
+    t.NOC AS country,
+    SUM(CASE WHEN o.season = \'Winter\' THEN 1 ELSE 0 END) AS winter_medals,
+    SUM(CASE WHEN o.season = \'Summer\' THEN 1 ELSE 0 END) AS summer_medals,
+    ROUND(
+        SUM(CASE WHEN o.season = \'Winter\' THEN 1 ELSE 0 END) /
+        SUM(CASE WHEN o.season = \'Summer\' THEN 1 ELSE 0 END),
+        2
+    ) AS winter_to_summer_ratio
+FROM
+    athlete_events AS ae
+INNER JOIN
+    teams AS t ON t.team_id = ae.team_id
+INNER JOIN
+    events AS e ON e.event_id = ae.event_id
+INNER JOIN
+    olympics AS o ON o.olympics_id = e.olympics_id
+INNER JOIN
+    athletes AS a ON a.athlete_id = ae.athlete_id
+WHERE
+    ae.medal != \'NA\' AND
+    (
+        t.NOC IN (
+            SELECT preference_value FROM country_preferences WHERE user_id = 2
+        )
+        OR NOT EXISTS (SELECT 1 FROM country_preferences WHERE user_id = 2)
+    )
+    AND o.year >= COALESCE(
+        (SELECT preference_value FROM year_preferences WHERE preference_param = \'start_year\' AND user_id = 2), 1000
+    )
+    AND o.year <= COALESCE(
+        (SELECT preference_value FROM year_preferences WHERE preference_param = \'end_year\' AND user_id = 2), 3000
+    )
+    AND (
+        e.sport_id IN (
+            SELECT preference_value FROM sports_preferences WHERE user_id = 2
+        )
+        OR NOT EXISTS (SELECT 1 FROM sports_preferences WHERE user_id = 2)
+    )
+GROUP BY
+    t.NOC LIMIT 4;', 'For the [countries], what is the ratio of Winter to Summer Olympics medals?'),
+    (6, 'SELECT
+    t.NOC AS country,
+    SUM(CASE WHEN o.season = \'Winter\' THEN 1 ELSE 0 END) AS winter_medals,
+    SUM(CASE WHEN o.season = \'Summer\' THEN 1 ELSE 0 END) AS summer_medals,
+    ROUND(
+        SUM(CASE WHEN o.season = \'Winter\' THEN 1 ELSE 0 END) /
+        SUM(CASE WHEN o.season = \'Summer\' THEN 1 ELSE 0 END),
+        2
+    ) AS winter_to_summer_ratio
+FROM
+    athlete_events AS ae
+INNER JOIN
+    teams AS t ON t.team_id = ae.team_id
+INNER JOIN
+    events AS e ON e.event_id = ae.event_id
+INNER JOIN
+    olympics AS o ON o.olympics_id = e.olympics_id
+INNER JOIN
+    athletes AS a ON a.athlete_id = ae.athlete_id
+WHERE
+    ae.medal != \'NA\' AND
+    (
+        t.NOC IN (
+            SELECT preference_value FROM country_preferences WHERE user_id = 2
+        )
+        OR NOT EXISTS (SELECT 1 FROM country_preferences WHERE user_id = 2)
+    )
+    AND o.year >= COALESCE(
+        (SELECT preference_value FROM year_preferences WHERE preference_param = \'start_year\' AND user_id = 2), 1000
+    )
+    AND o.year <= COALESCE(
+        (SELECT preference_value FROM year_preferences WHERE preference_param = \'end_year\' AND user_id = 2), 3000
+    )
+    AND (
+        e.sport_id IN (
+            SELECT preference_value FROM sports_preferences WHERE user_id = 2
+        )
+        OR NOT EXISTS (SELECT 1 FROM sports_preferences WHERE user_id = 2)
+    )
+GROUP BY
+    t.NOC
+HAVING
+    SUM(CASE WHEN o.season = \'Summer\' THEN 1 ELSE 0 END) > 0
+    AND SUM(CASE WHEN o.season = \'Winter\' THEN 1 ELSE 0 END) > 0 -- Remove countries with no summer or winter medals
+ORDER BY
+    winter_to_summer_ratio DESC
+LIMIT 4;', 'Which of the [countries] have the highest ratio of Winter to Summer Olympics medals?'),
+
+(7, 'SELECT
+    t.NOC AS country,
+    COUNT(*) AS female_gold_medallists
+FROM
+    athlete_events AS ae
+INNER JOIN
+    teams AS t ON t.team_id = ae.team_id
+INNER JOIN
+    events AS e ON e.event_id = ae.event_id
+INNER JOIN
+    olympics AS o ON o.olympics_id = e.olympics_id
+INNER JOIN
+    athletes AS a ON a.athlete_id = ae.athlete_id
+WHERE
+    a.sex = \'F\' AND
+    ae.medal = \'Gold\' AND (
+        t.NOC IN (
+            SELECT preference_value FROM country_preferences WHERE user_id = <user_id>
+        )
+        OR NOT EXISTS (SELECT 1 FROM country_preferences WHERE user_id = <user_id>)
+    )
+    AND o.year >= COALESCE(
+        (SELECT preference_value FROM year_preferences WHERE preference_param = \'t.start_year\' AND user_id = <user_id>), 1000
+    )
+    AND o.year <= COALESCE(
+        (SELECT preference_value FROM year_preferences WHERE preference_param = \'t.end_year\' AND user_id = <user_id>), 3000
+    )
+    AND (
+        e.sport_id IN (
+            SELECT preference_value FROM sports_preferences WHERE user_id = <user_id>
+        )
+        OR NOT EXISTS (SELECT 1 FROM sports_preferences WHERE user_id = <user_id>)
+    )
+GROUP BY
+    t.NOC
+ORDER BY
+    female_gold_medallists DESC
+LIMIT 4;', 'Among the [countries] participating in the [years] Olympics, which nation had the highest number of female gold medallists?'),
+
+(8, 'SELECT
+    t.NOC AS country,
+    COUNT(*) AS c
+FROM
+    athlete_events AS ae
+INNER JOIN
+    teams AS t ON t.team_id = ae.team_id
+INNER JOIN
+    events AS e ON e.event_id = ae.event_id
+INNER JOIN
+    olympics AS o ON o.olympics_id = e.olympics_id
+WHERE
+    o.season = \'Winter\' AND
+    ae.medal = \'Gold\' AND
+    (
+        t.NOC IN (
+            SELECT preference_value FROM country_preferences WHERE user_id = <user_id>
+        )
+        OR NOT EXISTS (SELECT 1 FROM country_preferences WHERE user_id = <user_id>)
+    )
+    AND o.year >= COALESCE(
+        (SELECT preference_value FROM year_preferences WHERE preference_param = \'start_year\' and user_id = <user_id>), 1000
+    )
+    AND o.year <= COALESCE(
+        (SELECT preference_value FROM year_preferences WHERE preference_param = \'end_year\' and user_id = <user_id>), 3000
+    )
+    AND (
+        e.sport_id IN (
+            SELECT preference_value FROM sports_preferences WHERE user_id = <user_id>
+        )
+        OR NOT EXISTS (SELECT 1 FROM sports_preferences WHERE user_id = <user_id>)
+    )
+GROUP BY
+    t.NOC
+ORDER BY
+    c DESC
+LIMIT 4;', 'Among the [countries], which country secured the most gold medals in the [years] Winter Olympics?'),
+
+(9, 'SELECT
+    t.NOC AS country,
+    COUNT(*) AS female_participations
+FROM
+    athlete_events AS ae
+INNER JOIN
+    teams AS t ON t.team_id = ae.team_id
+INNER JOIN
+    events AS e ON e.event_id = ae.event_id
+INNER JOIN
+    olympics AS o ON o.olympics_id = e.olympics_id
+INNER JOIN
+    athletes AS a ON a.athlete_id = ae.athlete_id
+WHERE
+    a.sex = \'F\' AND
+    (
+        t.NOC IN (
+            SELECT preference_value FROM country_preferences WHERE user_id = <user_id>
+        )
+        OR NOT EXISTS (SELECT 1 FROM country_preferences WHERE user_id = <user_id>)
+    )
+    AND (
+        e.sport_id IN (
+            SELECT preference_value FROM sports_preferences WHERE user_id = <user_id>
+        )
+        OR NOT EXISTS (SELECT 1 FROM sports_preferences WHERE user_id = <user_id>)
+    )
+GROUP BY
+    t.NOC
+ORDER BY
+    female_participations DESC
+LIMIT 4;', 'Among the [countries] participating in the [year] Olympics, which nation had the highest number of female participations?'),
+
+(10, 'SELECT
+    t.NOC AS country,
+    MAX(ae.height) AS athlete_height
+FROM
+    athlete_events AS ae
+INNER JOIN
+    teams AS t ON t.team_id = ae.team_id
+INNER JOIN
+    events AS e ON e.event_id = ae.event_id
+INNER JOIN
+    olympics AS o ON o.olympics_id = e.olympics_id
+INNER JOIN
+    athletes AS a ON a.athlete_id = ae.athlete_id
+WHERE
+    ae.height IS NOT NULL
+    AND (
+        t.NOC IN (
+            SELECT preference_value FROM country_preferences WHERE user_id = <user_id>
+        )
+        OR NOT EXISTS (SELECT 1 FROM country_preferences WHERE user_id = <user_id>)
+    )
+    AND (
+        e.sport_id IN (
+            SELECT preference_value FROM sports_preferences WHERE user_id = <user_id>
+        )
+        OR NOT EXISTS (SELECT 1 FROM sports_preferences WHERE user_id = <user_id>)
+    )
+GROUP BY
+    t.NOC
+ORDER BY
+    MAX(ae.height) ASC
+LIMIT 4;', 'Among the [countries] participating in [sports], which country had the shortest athlete (in cm) of all time?'),
+
+(11, 'SELECT
+    t.NOC AS country,
+    MAX(ae.height) AS athlete_height
+FROM
+    athlete_events AS ae
+INNER JOIN
+    teams AS t ON t.team_id = ae.team_id
+INNER JOIN
+    events AS e ON e.event_id = ae.event_id
+INNER JOIN
+    olympics AS o ON o.olympics_id = e.olympics_id
+INNER JOIN
+    athletes AS a ON a.athlete_id = ae.athlete_id
+WHERE
+    ae.height IS NOT NULL
+    AND (
+        t.NOC IN (
+            SELECT preference_value FROM country_preferences WHERE user_id = <user_id>
+        )
+        OR NOT EXISTS (SELECT 1 FROM country_preferences WHERE user_id = <user_id>)
+    )
+    AND (
+        e.sport_id IN (
+            SELECT preference_value FROM sports_preferences WHERE user_id = <user_id>
+        )
+        OR NOT EXISTS (SELECT 1 FROM sports_preferences WHERE user_id = <user_id>)
+    )
+GROUP BY
+    t.NOC
+ORDER BY
+    MAX(ae.height) DESC
+LIMIT 4;', 'Among the [countries] participating in [sports], which country had the tallest athlete (in cm) of all time?'),
+
+(12, 'SELECT
+    t.NOC AS country,
+    MAX(ae.weight) AS athlete_weight
+FROM
+    athlete_events AS ae
+INNER JOIN
+    teams AS t ON t.team_id = ae.team_id
+INNER JOIN
+    events AS e ON e.event_id = ae.event_id
+INNER JOIN
+    olympics AS o ON o.olympics_id = e.olympics_id
+INNER JOIN
+    athletes AS a ON a.athlete_id = ae.athlete_id
+WHERE
+    ae.weight IS NOT NULL
+    AND (
+        t.NOC IN (
+            SELECT preference_value FROM country_preferences WHERE user_id = <user_id>
+        )
+        OR NOT EXISTS (SELECT 1 FROM country_preferences WHERE user_id = <user_id>)
+    )
+    AND (
+        e.sport_id IN (
+            SELECT preference_value FROM sports_preferences WHERE user_id = <user_id>
+        )
+        OR NOT EXISTS (SELECT 1 FROM sports_preferences WHERE user_id = <user_id>)
+    )
+GROUP BY
+    t.NOC
+ORDER BY
+    MAX(ae.weight) DESC
+LIMIT 4;', 'Among the [countries] participating in [sports] Olympics, which athlete had the highest weight of all time?'),
+
+(13, 'SELECT
+    t.NOC AS country,
+    MAX(ae.weight) AS athlete_weight
+FROM
+    athlete_events AS ae
+INNER JOIN
+    teams AS t ON t.team_id = ae.team_id
+INNER JOIN
+    events AS e ON e.event_id = ae.event_id
+INNER JOIN
+    olympics AS o ON o.olympics_id = e.olympics_id
+INNER JOIN
+    athletes AS a ON a.athlete_id = ae.athlete_id
+WHERE
+    ae.weight IS NOT NULL
+    AND (
+        t.NOC IN (
+            SELECT preference_value FROM country_preferences WHERE user_id = <user_id>
+        )
+        OR NOT EXISTS (SELECT 1 FROM country_preferences WHERE user_id = <user_id>)
+    )
+    AND (
+        e.sport_id IN (
+            SELECT preference_value FROM sports_preferences WHERE user_id = <user_id>
+        )
+        OR NOT EXISTS (SELECT 1 FROM sports_preferences WHERE user_id = <user_id>)
+    )
+GROUP BY
+    t.NOC
+ORDER BY
+    MAX(ae.weight) ASC
+LIMIT 4;', 'Among the [countries] participating in [sports] Olympics, which athlete had the lowest weight of all time?'),
+
+(14, 'SELECT
+    t.NOC AS country,
+    MIN(ae.age) AS athlete_age
+FROM
+    athlete_events AS ae
+INNER JOIN
+    teams AS t ON t.team_id = ae.team_id
+INNER JOIN
+    events AS e ON e.event_id = ae.event_id
+INNER JOIN
+    olympics AS o ON o.olympics_id = e.olympics_id
+INNER JOIN
+    athletes AS a ON a.athlete_id = ae.athlete_id
+WHERE
+    ae.age IS NOT NULL
+    AND (
+        t.NOC IN (
+            SELECT preference_value FROM country_preferences WHERE user_id = <user_id>
+        )
+        OR NOT EXISTS (SELECT 1 FROM country_preferences WHERE user_id = <user_id>)
+    )
+    AND (
+        e.sport_id IN (
+            SELECT preference_value FROM sports_preferences WHERE user_id = <user_id>
+        )
+        OR NOT EXISTS (SELECT 1 FROM sports_preferences WHERE user_id = <user_id>)
+    )
+GROUP BY
+    t.NOC
+ORDER BY
+    MIN(ae.age) ASC
+LIMIT 4;', 'Among the [countries] participating in [sports] Olympics, which nation had the youngest athlete of all time?'),
+
+(15, 'SELECT
+    t.NOC AS country,
+    MIN(ae.age) AS athlete_age
+FROM
+    athlete_events AS ae
+INNER JOIN
+    teams AS t ON t.team_id = ae.team_id
+INNER JOIN
+    events AS e ON e.event_id = ae.event_id
+INNER JOIN
+    olympics AS o ON o.olympics_id = e.olympics_id
+INNER JOIN
+    athletes AS a ON a.athlete_id = ae.athlete_id
+WHERE
+    ae.age IS NOT NULL
+    AND (
+        t.NOC IN (
+            SELECT preference_value FROM country_preferences WHERE user_id = <user_id>
+        )
+        OR NOT EXISTS (SELECT 1 FROM country_preferences WHERE user_id = <user_id>)
+    )
+    AND (
+        e.sport_id IN (
+            SELECT preference_value FROM sports_preferences WHERE user_id = <user_id>
+        )
+        OR NOT EXISTS (SELECT 1 FROM sports_preferences WHERE user_id = <user_id>)
+    )
+GROUP BY
+    t.NOC
+ORDER BY
+    MIN(ae.age) DESC
+LIMIT 4;', 'Among the [countries] participating in [sports] Olympics, which nation had the oldest athlete of all time?');
+
+
+
+
+
+
+
+-- 	(1, 'SELECT\n	t.NOC AS country,\n    COUNT(*) AS c\nFROM\n    athlete_events AS ae\nINNER JOIN\n    teams AS t ON t.team_id = ae.team_id\nINNER JOIN\n    events AS e ON e.event_id = ae.event_id\nINNER JOIN\n    olympics AS o ON o.olympics_id = e.olympics_id\nWHERE\n    o.season = \'Summer\' AND\n    ae.medal = \'Gold\' AND\n    (\n        t.NOC IN (\n          SELECT preference_value FROM country_preferences WHERE user_id = <user_id>\n        )\n        OR NOT EXISTS (SELECT 1 FROM country_preferences WHERE user_id = <user_id>)\n    )  AND\n\n    o.year >= COALESCE(\n        (SELECT preference_value FROM year_preferences WHERE preference_param = \'start_year\' and user_id = <user_id>), 1000\n    ) AND\n    o.year <= COALESCE(\n        (SELECT preference_value FROM year_preferences WHERE preference_param = \'end_year\' and user_id = <user_id>), 3000\n    ) AND\n    (\n        e.sport_id IN (\n          SELECT preference_value FROM sports_preferences WHERE user_id = <user_id>\n        )\n        OR NOT EXISTS (SELECT 1 FROM sports_preferences WHERE user_id = <user_id>)\n    )\n\nGROUP BY\n    t.NOC\nORDER BY\n    c DESC\n\nLIMIT 4;', 'Among the [countries], which country secured the most gold medals in the [years] Summer Olympics?'),
+-- 	(2, 'SELECT t.NOC AS country, COUNT(*) AS c\nFROM athlete_events AS ae\nINNER JOIN teams AS t ON t.team_id = ae.team_id\nINNER JOIN events AS e ON e.event_id = ae.event_id\nINNER JOIN olympics AS o ON o.olympics_id = e.olympics_id\nWHERE\no.season = \'Summer\' AND\nae.medal = \'Gold\' AND\n(\n    t.NOC IN (\n      SELECT preference_value FROM country_preferences WHERE user_id = <user_id>\n    )\n    OR NOT EXISTS (SELECT 1 FROM country_preferences WHERE user_id = <user_id>)\n)  AND\n\no.year >= COALESCE(\n	(SELECT preference_value FROM year_preferences WHERE preference_param = \'start_year\' and user_id = <user_id>), 1000\n) AND\no.year <= COALESCE(\n	(SELECT preference_value FROM year_preferences WHERE preference_param = \'end_year\' and user_id = <user_id>), 3000\n) AND\n(\n    e.sport_id IN (\n      SELECT preference_value FROM sports_preferences WHERE user_id = <user_id>\n    )\n    OR NOT EXISTS (SELECT 1 FROM sports_preferences WHERE user_id = <user_id>)\n)\n\nGROUP BY t.NOC\nORDER BY c DESC\nLIMIT 4;\n', 'In the [years] Winter Olympics, which athlete among [countries] won the most medals across all sports?'),
+-- 	(3, 'SELECT\n    t.NOC AS country,\n    COUNT(*) AS total_medals\nFROM\n    athlete_events AS ae\nINNER JOIN\n    teams AS t ON t.team_id = ae.team_id\nINNER JOIN\n    events AS e ON e.event_id = ae.event_id\nINNER JOIN\n    olympics AS o ON o.olympics_id = e.olympics_id\nWHERE\n    o.year = \'2000\' AND\n    o.season = \'Summer\' AND\n    ae.medal != \'NA\'  AND (\n        t.NOC IN (\n            SELECT preference_value FROM country_preferences WHERE user_id = <user_id>\n        )\n        OR NOT EXISTS (SELECT 1 FROM country_preferences WHERE user_id = <user_id>)\n    )\n    AND o.year >= COALESCE(\n        (SELECT preference_value FROM year_preferences WHERE preference_param = \'start_year\' AND user_id = <user_id>), 1000\n    )\n    AND o.year <= COALESCE(\n        (SELECT preference_value FROM year_preferences WHERE preference_param = \'end_year\' AND user_id = <user_id>), 3000\n    )\nGROUP BY\n    t.NOC\nORDER BY\n    total_medals DESC\nLIMIT 4;', 'Among the [countries] in the [years] Summer Olympics, which nation topped the medal tally in [sports]?'),
+--     (4, 'SELECT\n t.NOC AS country,\n COUNT(*) AS gold_medals\nFROM\n athlete_events AS ae\nINNER JOIN\n teams AS t ON t.team_id = ae.team_id\nINNER JOIN\n events AS e ON e.event_id = ae.event_id\nINNER JOIN\n olympics AS o ON o.olympics_id = e.olympics_id\nINNER JOIN\n athletes AS a ON a.athlete_id = ae.athlete_id\nINNER JOIN\n sports AS s ON s.sport_id = e.sport_id\nWHERE\n ae.medal = 'Gold\' AND\n s.name = 'Swimming\' AND\n (\n t.NOC IN (\n SELECT preference_value FROM country_preferences WHERE user_id = <user_id>\n )\n OR NOT EXISTS (SELECT 1 FROM country_preferences WHERE user_id = <user_id>)\n )\n AND o.year >= COALESCE(\n (SELECT preference_value FROM year_preferences WHERE preference_param = 'start_year' AND user_id = <user_id>), 1000\n )\n AND o.year <= COALESCE(\n (SELECT preference_value FROM year_preferences WHERE preference_param = 'end_year' AND user_id = <user_id>), 3000\n )\nGROUP BY\n t.NOC\nORDER BY\n gold_medals DESC\nLIMIT 4;', 'Among the [countries] which swimmer won the most gold medals in the [years] Olympics?'),
+-- 	(5, 'SELECT\n    t.NOC AS country,\n    SUM(CASE WHEN o.season = \'Winter\' THEN 1 ELSE 0 END) AS winter_medals,\n    SUM(CASE WHEN o.season = \'Summer\' THEN 1 ELSE 0 END) AS summer_medals,\n    ROUND(\n        SUM(CASE WHEN o.season = \'Winter\' THEN 1 ELSE 0 END) /\n        SUM(CASE WHEN o.season = \'Summer\' THEN 1 ELSE 0 END),\n        2\n    ) AS winter_to_summer_ratio\nFROM\n    athlete_events AS ae\nINNER JOIN\n    teams AS t ON t.team_id = ae.team_id\nINNER JOIN\n    events AS e ON e.event_id = ae.event_id\nINNER JOIN\n    olympics AS o ON o.olympics_id = e.olympics_id\nINNER JOIN\n    athletes AS a ON a.athlete_id = ae.athlete_id\nWHERE\n    ae.medal != \'NA\' AND\n    (\n        t.NOC IN (\n            SELECT preference_value FROM country_preferences WHERE  user_id = 2\n        )\n        OR NOT EXISTS (SELECT 1 FROM country_preferences WHERE user_id = 2)\n    )  AND\n    o.year >= COALESCE(\n        (SELECT preference_value FROM year_preferences WHERE preference_param = \'t.start_year\' AND user_id = 2), 1000\n    ) AND\n    o.year <= COALESCE(\n        (SELECT preference_value FROM year_preferences WHERE preference_param = \'t.end_year\' AND user_id = 2), 3000\n    ) AND\n    (\n        e.sport_id IN (\n            SELECT preference_value FROM sports_preferences WHERE  user_id = 2\n        )\n        OR NOT EXISTS (SELECT 1 FROM sports_preferences WHERE user_id = 2)\n    )\nGROUP BY\n    t.NOC\nHAVING\n    SUM(CASE WHEN o.season = \'Summer\' THEN 1 ELSE 0 END) > 0\n    AND SUM(CASE WHEN o.season = \'Winter\' THEN 1 ELSE 0 END) > 0 -- Remove countries with no summer or winter medals\nORDER BY\n    winter_to_summer_ratio ASC\nLIMIT 4;', 'Which of the [countries] have the lowest ratio winter to summer medals?');
+-- 	(6, 'SELECT\n    t.NOC AS country,\n    SUM(CASE WHEN o.season = \'Winter\' THEN 1 ELSE 0 END) AS winter_medals,\n    SUM(CASE WHEN o.season = \'Summer\' THEN 1 ELSE 0 END) AS summer_medals,\n    ROUND(\n        SUM(CASE WHEN o.season = \'Winter\' THEN 1 ELSE 0 END) /\n        SUM(CASE WHEN o.season = \'Summer\' THEN 1 ELSE 0 END),\n        2\n    ) AS winter_to_summer_ratio\nFROM\n    athlete_events AS ae\nINNER JOIN\n    teams AS t ON t.team_id = ae.team_id\nINNER JOIN\n    events AS e ON e.event_id = ae.event_id\nINNER JOIN\n    olympics AS o ON o.olympics_id = e.olympics_id\nINNER JOIN\n    athletes AS a ON a.athlete_id = ae.athlete_id\nWHERE\n    ae.medal != \'NA\' AND\n    (\n        t.NOC IN (\n            SELECT preference_value FROM country_preferences WHERE  user_id = 2\n        )\n        OR NOT EXISTS (SELECT 1 FROM country_preferences WHERE user_id = 2)\n    )  AND\n    o.year >= COALESCE(\n        (SELECT preference_value FROM year_preferences WHERE preference_param = \'t.start_year\' AND user_id = 2), 1000\n    ) AND\n    o.year <= COALESCE(\n        (SELECT preference_value FROM year_preferences WHERE preference_param = \'t.end_year\' AND user_id = 2), 3000\n    ) AND\n    (\n        e.sport_id IN (\n            SELECT preference_value FROM sports_preferences WHERE  user_id = 2\n        )\n        OR NOT EXISTS (SELECT 1 FROM sports_preferences WHERE user_id = 2)\n    )\nGROUP BY\n    t.NOC\nHAVING\n    SUM(CASE WHEN o.season = \'Summer\' THEN 1 ELSE 0 END) > 0\n    AND SUM(CASE WHEN o.season = \'Winter\' THEN 1 ELSE 0 END) > 0 -- Remove countries with no summer or winter medals\nORDER BY\n    winter_to_summer_ratio DESC\nLIMIT 4;', 'Which of the [countries] have the highest ratio winter to summer medals?');
+--     (7, 'SELECT\n t.NOC AS country,\n COUNT(*) AS female_gold_medallists\nFROM\n athlete_events AS ae\nINNER JOIN\n teams AS t ON t.team_id = ae.team_id\nINNER JOIN\n events AS e ON e.event_id = ae.event_id\nINNER JOIN\n olympics AS o ON o.olympics_id = e.olympics_id\nINNER JOIN\n athletes AS a ON a.athlete_id = ae.athlete_id\nWHERE\n a.sex = 'F' AND\n ae.medal = 'Gold\' AND (\n t.NOC IN (\n SELECT preference_value FROM country_preferences WHERE user_id = <user_id>\n )\n OR NOT EXISTS (SELECT 1 FROM country_preferences WHERE user_id = <user_id>)\n ) AND\n o.year >= COALESCE(\n (SELECT preference_value FROM year_preferences WHERE preference_param = 't.start_year' AND user_id = <user_id>), 1000\n ) AND\n o.year <= COALESCE(\n (SELECT preference_value FROM year_preferences WHERE preference_param = 't.end_year' AND user_id = <user_id>), 3000\n ) AND\n (\n e.sport_id IN (\n SELECT preference_value FROM sports_preferences WHERE user_id = <user_id>\n )\n OR NOT EXISTS (SELECT 1 FROM sports_preferences WHERE user_id = <user_id>)\n )\nGROUP BY\n t.NOC\nORDER BY\n female_gold_medallists DESC\nLIMIT 4;', 'Among the [countries] participating in the [years] Olympics, which nation had the highest number of female gold medallists?')
+--     (8, 'SELECT\n	t.NOC AS country,\n    COUNT(*) AS c\nFROM\n    athlete_events AS ae\nINNER JOIN\n    teams AS t ON t.team_id = ae.team_id\nINNER JOIN\n    events AS e ON e.event_id = ae.event_id\nINNER JOIN\n    olympics AS o ON o.olympics_id = e.olympics_id\nWHERE\n    o.season = \'Winter\' AND\n    ae.medal = \'Gold\' AND\n    (\n        t.NOC IN (\n          SELECT preference_value FROM country_preferences WHERE user_id = <user_id>\n        )\n        OR NOT EXISTS (SELECT 1 FROM country_preferences WHERE user_id = <user_id>)\n    )  AND\n\n    o.year >= COALESCE(\n        (SELECT preference_value FROM year_preferences WHERE preference_param = \'start_year\' and user_id = <user_id>), 1000\n    ) AND\n    o.year <= COALESCE(\n        (SELECT preference_value FROM year_preferences WHERE preference_param = \'end_year\' and user_id = <user_id>), 3000\n    ) AND\n    (\n        e.sport_id IN (\n          SELECT preference_value FROM sports_preferences WHERE user_id = <user_id>\n        )\n        OR NOT EXISTS (SELECT 1 FROM sports_preferences WHERE user_id = <user_id>)\n    )\n\nGROUP BY\n    t.NOC\nORDER BY\n    c DESC\n\nLIMIT 4;', 'Among the [countries], which country secured the most gold medals in the [years] Winter Olympics?'),
+--     (9, 'SELECT\n t.NOC AS country,\n COUNT(*) AS female_participations\nFROM\n athlete_events AS ae\nINNER JOIN\n teams AS t ON t.team_id = ae.team_id\nINNER JOIN\n events AS e ON e.event_id = ae.event_id\nINNER JOIN\n olympics AS o ON o.olympics_id = e.olympics_id\nINNER JOIN\n athletes AS a ON a.athlete_id = ae.athlete_id\nWHERE\n a.sex = 'F'\n AND (\n t.NOC IN (\n SELECT preference_value FROM country_preferences WHERE user_id = <user_id>\n )\n OR NOT EXISTS (SELECT 1 FROM country_preferences WHERE user_id = <user_id>)\n )\n AND (\n e.sport_id IN (\n SELECT preference_value FROM sports_preferences WHERE user_id = <user_id>\n )\n OR NOT EXISTS (SELECT 1 FROM sports_preferences WHERE user_id = <user_id>)\n )\nGROUP BY\n t.NOC\nORDER BY\n female_participations DESC\nLIMIT 4;', 'Among the [countries] participating in the [year] Olympics, which nation had the highest number of female participations?')
+--     (10, 'SELECT\n t.NOC AS country,\n MAX(ae.height) AS athlete_height\nFROM\n athlete_events AS ae\nINNER JOIN\n teams AS t ON t.team_id = ae.team_id\nINNER JOIN\n events AS e ON e.event_id = ae.event_id\nINNER JOIN\n olympics AS o ON o.olympics_id = e.olympics_id\nINNER JOIN\n athletes AS a ON a.athlete_id = ae.athlete_id\nWHERE\n ae.height IS NOT NULL\n AND (\n t.NOC IN (\n SELECT preference_value FROM country_preferences WHERE user_id = <user_id>\n )\n OR NOT EXISTS (SELECT 1 FROM country_preferences WHERE user_id = <user_id>)\n )\n AND (\n e.sport_id IN (\n SELECT preference_value FROM sports_preferences WHERE user_id = <user_id>\n )\n OR NOT EXISTS (SELECT 1 FROM sports_preferences WHERE user_id = <user_id>)\n )\nGROUP BY\n a.name, t.NOC\nORDER BY\n MAX(ae.height) ASC\nLIMIT 4;', 'Among the [countries] participating in [sports], which country had the shortest athlete (in cm) of all time?')
+--     (11, 'SELECT\n t.NOC AS country,\n MAX(ae.height) AS athlete_height\nFROM\n athlete_events AS ae\nINNER JOIN\n teams AS t ON t.team_id = ae.team_id\nINNER JOIN\n events AS e ON e.event_id = ae.event_id\nINNER JOIN\n olympics AS o ON o.olympics_id = e.olympics_id\nINNER JOIN\n athletes AS a ON a.athlete_id = ae.athlete_id\nWHERE\n ae.height IS NOT NULL\n AND (\n t.NOC IN (\n SELECT preference_value FROM country_preferences WHERE user_id = <user_id>\n )\n OR NOT EXISTS (SELECT 1 FROM country_preferences WHERE user_id = <user_id>)\n )\n AND (\n e.sport_id IN (\n SELECT preference_value FROM sports_preferences WHERE user_id = <user_id>\n )\n OR NOT EXISTS (SELECT 1 FROM sports_preferences WHERE user_id = <user_id>)\n )\nGROUP BY\n a.name, t.NOC\nORDER BY\n MAX(ae.height) DESC\nLIMIT 4;', 'Among the [countries] participating in [sports], which country had the tallest athlete (in cm) of all time?')
+--     (12, 'SELECT\n t.NOC AS country,\n MAX(ae.weight) AS athlete_weight\nFROM\n athlete_events AS ae\nINNER JOIN\n teams AS t ON t.team_id = ae.team_id\nINNER JOIN\n events AS e ON e.event_id = ae.event_id\nINNER JOIN\n olympics AS o ON o.olympics_id = e.olympics_id\nINNER JOIN\n athletes AS a ON a.athlete_id = ae.athlete_id\nWHERE\n ae.weight IS NOT NULL\n AND (\n t.NOC IN (\n SELECT preference_value FROM country_preferences WHERE user_id = <user_id>\n )\n OR NOT EXISTS (SELECT 1 FROM country_preferences WHERE user_id = <user_id>)\n )\n AND (\n e.sport_id IN (\n SELECT preference_value FROM sports_preferences WHERE user_id = <user_id>\n )\n OR NOT EXISTS (SELECT 1 FROM sports_preferences WHERE user_id = <user_id>)\n )\nGROUP BY\n a.name, t.NOC\nORDER BY\n MAX(ae.weight) DESC\nLIMIT 4;', 'Among the [countries] participating in [sports] Olympics, which athlete had the highest weight of all time?')
+--     (13, 'SELECT\n t.NOC AS country,\n MAX(ae.weight) AS athlete_weight\nFROM\n athlete_events AS ae\nINNER JOIN\n teams AS t ON t.team_id = ae.team_id\nINNER JOIN\n events AS e ON e.event_id = ae.event_id\nINNER JOIN\n olympics AS o ON o.olympics_id = e.olympics_id\nINNER JOIN\n athletes AS a ON a.athlete_id = ae.athlete_id\nWHERE\n ae.weight IS NOT NULL\n AND (\n t.NOC IN (\n SELECT preference_value FROM country_preferences WHERE user_id = <user_id>\n )\n OR NOT EXISTS (SELECT 1 FROM country_preferences WHERE user_id = <user_id>)\n )\n AND (\n e.sport_id IN (\n SELECT preference_value FROM sports_preferences WHERE user_id = <user_id>\n )\n OR NOT EXISTS (SELECT 1 FROM sports_preferences WHERE user_id = <user_id>)\n )\nGROUP BY\n a.name, t.NOC\nORDER BY\n MAX(ae.weight) ASC\nLIMIT 4;', 'Among the [countries] participating in [sports] Olympics, which athlete had the lowest weight of all time?')
+--     (14, 'SELECT\n t.NOC AS country,\n MIN(ae.age) AS athlete_age\nFROM\n athlete_events AS ae\nINNER JOIN\n teams AS t ON t.team_id = ae.team_id\nINNER JOIN\n events AS e ON e.event_id = ae.event_id\nINNER JOIN\n olympics AS o ON o.olympics_id = e.olympics_id\nINNER JOIN\n athletes AS a ON a.athlete_id = ae.athlete_id\nWHERE\n ae.age IS NOT NULL\n AND (\n t.NOC IN (\n SELECT preference_value FROM country_preferences WHERE user_id = <user_id>\n )\n OR NOT EXISTS (SELECT 1 FROM country_preferences WHERE user_id = <user_id>)\n )\n AND (\n e.sport_id IN (\n SELECT preference_value FROM sports_preferences WHERE user_id = <user_id>\n )\n OR NOT EXISTS (SELECT 1 FROM sports_preferences WHERE user_id = <user_id>)\n )\nGROUP BY\n a.name, t.NOC\nORDER BY\n MIN(ae.age) ASC\nLIMIT 4;', 'Among the [countries] participating in [sports] Olympics, which nation had the youngest athlete of all time?')
+--     (15, 'SELECT\n t.NOC AS country,\n MIN(ae.age) AS athlete_age\nFROM\n athlete_events AS ae\nINNER JOIN\n teams AS t ON t.team_id = ae.team_id\nINNER JOIN\n events AS e ON e.event_id = ae.event_id\nINNER JOIN\n olympics AS o ON o.olympics_id = e.olympics_id\nINNER JOIN\n athletes AS a ON a.athlete_id = ae.athlete_id\nWHERE\n ae.age IS NOT NULL\n AND (\n t.NOC IN (\n SELECT preference_value FROM country_preferences WHERE user_id = <user_id>\n )\n OR NOT EXISTS (SELECT 1 FROM country_preferences WHERE user_id = <user_id>)\n )\n AND (\n e.sport_id IN (\n SELECT preference_value FROM sports_preferences WHERE user_id = <user_id>\n )\n OR NOT EXISTS (SELECT 1 FROM sports_preferences WHERE user_id = <user_id>)\n )\nGROUP BY\n a.name, t.NOC\nORDER BY\n MIN(ae.age) DESC\nLIMIT 4;', 'Among the [countries] participating in [sports] Olympics, which nation had the oldest athlete of all time?')
+--
 
 
 
