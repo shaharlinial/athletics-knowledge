@@ -79,14 +79,8 @@ class DataImporter:
 
 
 if __name__ == '__main__':
-    # Define database connection parameters
-    host = 'localhost'
-    user = 'root'
-    password = 'root'
-    database = 'mydatabase'
-    #
     # # Create MySQL connection
-    mysql_connection = MySQLConnection(host, user, password, database)
+    mysql_connection = MySQLConnection()
     mysql_connection.connect()
 
     # # database CSV file

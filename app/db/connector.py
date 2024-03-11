@@ -1,9 +1,10 @@
 import mysql.connector
 from mysql.connector import Error
+from app.db.db_params import *
 
 
 class MySQLConnection:
-    def __init__(self, host, user, password, database):
+    def __init__(self):
         self.host = host
         self.user = user
         self.password = password

@@ -80,13 +80,8 @@ def generate_question_based_on_preferences(sql_connection, preferences):
 
 
 def get_db():
-    host = 'localhost'
-    user = 'root'
-    password = 'root'
-    database = 'mydatabase'
-    #
     # # Create MySQL connection
-    sql_connection = MySQLConnection(host, user, password, database)
+    sql_connection = MySQLConnection()
     sql_connection.connect()
 
     if 'db' not in g:

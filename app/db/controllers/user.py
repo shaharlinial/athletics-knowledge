@@ -48,7 +48,8 @@ class UserController(base_controller.BaseController):
             select users.user_id, users.first_name, users.last_name,sum(answers.points) as total_points from answers
             inner join users on users.user_id = answers.user_id
             group by answers.user_id
-            order by total_points desc;
+            order by total_points desc
+            limit {limit};
         """
         try:
             result = self.db.fetch_data(leaderboard_query)

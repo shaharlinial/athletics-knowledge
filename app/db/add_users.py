@@ -26,16 +26,19 @@ class FakeUsersCreator:
                 VALUES ('{u.user_name}', '{u.first_name}', '{u.last_name}', '{u.hashed_password}', {u.score});
                 """
             )
+            user_id = cursor.lastrowid
+            for j in range(1, 10):
+                cursor.execute(
+                    f"""
+                    INSERT INTO answers (user_id, question_id, answer_text, is_correct, points) 
+                    VALUES ({user_id}, {j}, 'USA', {random.choice([True, False])}, {random.randint(0, 10)});
+                    """
+                )
 
 
 if __name__ == '__main__':
-    host = 'localhost'
-    user = 'root'
-    password = 'root'
-    database = 'mydatabase'
-    #
     # # Create MySQL connection
-    sql_connection = MySQLConnection(host, user, password, database)
+    sql_connection = MySQLConnection()
     sql_connection.connect()
 
     fake_users_creator = FakeUsersCreator(sql_connection)
