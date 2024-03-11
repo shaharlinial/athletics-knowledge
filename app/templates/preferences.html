@@ -1,20 +1,23 @@
 <!DOCTYPE html>
 <html lang="en">
-<{% extends "base.html" %}
 
-{% block title %}User Preferences{% endblock %}%}
+{% extends "base.html" %}
+
+{% block title %}User Preferences{% endblock %}
 
 {% block styles %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/preferences.css') }}">
+
 {% endblock %}
+
 {% block content %}
 
 <body>
     <h1>User Preferences</h1>
     <form action="/api/preferences" method="post">
         <input type="hidden" name="user_id" value="{{ data.user_preferences.user_id }}">
-        <div class="country-container">
-            <p>Countries:</p>
+        <button class="collapsible" type="button">Countries</button>
+        <div class="content country-container">
             {% for country in data.available_preferences.countries %}
             <div>
                 <input type="checkbox" id="country_{{ loop.index }}" name="countries" value="{{ country.NOC }}" {% if country in data.user_preferences.countries %} checked {% endif %}>
@@ -41,8 +44,8 @@
             </select>
         </div>
 
-        <div class="country-container">
-            <p>Sport Types:</p>
+        <button class="collapsible" type="button">Sport Types</button>
+        <div class="content country-container">
             {% for sport in data.available_preferences.sport_types %}
             <div>
                 <input type="checkbox" id="sport_type_{{ loop.index }}" name="sport_type" value="{{ sport.sport_id}}" {% if sport in data.user_preferences.sport_types %} checked {% endif %}>
@@ -53,7 +56,23 @@
 
         <button type="submit">Save Preferences</button>
     </form>
-{% endblock %}
 
+    <script>
+        var coll = document.getElementsByClassName("collapsible");
+        var i;
+
+        for (i = 0; i < coll.length; i++) {
+            coll[i].addEventListener("click", function () {
+                this.classList.toggle("active");
+                var content = this.nextElementSibling;
+                if (content.style.display === "block") {
+                    content.style.display = "none";
+                } else {
+                    content.style.display = "block";
+                }
+            });
+        }
+    </script>
+{% endblock %}
 </body>
 </html>

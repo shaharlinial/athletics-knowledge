@@ -8,8 +8,49 @@
 {% endblock %}
 {% block content %}
 <body>
+    <style>
+    body{
+        text-align: center;
+    }
+     ul {
+        list-style-type: none;
+        padding: 0;
+        display: flex; /* Use flexbox to align list items in the same row */
+        justify-content: center; /* Center-align list items */
+    }
+
+    .student {
+        margin: 50px; /* Add spacing between list items */
+        text-align: center; /* Center-align text under the images */
+    }
+
+    img {
+        width: 100px; /* Set the desired width for all images */
+        height: 100px; /* Set the desired height for all images */
+        object-fit: cover; /* Maintain aspect ratio and cover the entire container */
+        border-radius: 50%; /* Optional: Apply rounded corners for a circular shape */
+    }
+
+
+    </style>
     <h1>About Us</h1>
-    <p>This is the about page of our website.</p>
+    <h2>
+        Our team includes the following students:
+    </h2>
+    <ul>
+        <li class="student">
+            <img src="https://media.licdn.com/dms/image/D5635AQFfk2gYCw9u6A/profile-framedphoto-shrink_800_800/0/1635789447372?e=1710752400&v=beta&t=KHESZvUc4usRhpn0tghZFlvaCstBgNH-LWLgr6fWZAs" alt="Yahel Jacobs">
+            <br><h3>Yahel Jacobs</h3>
+        </li>
+        <li class="student">
+            <img src="https://media.licdn.com/dms/image/D4D03AQHnp1xVwpnr7g/profile-displayphoto-shrink_800_800/0/1708799577054?e=1715817600&v=beta&t=Y133aZAO-ewS_BcqXfnTlGcNZ0hmr0RGlqR76M6n_VQ" alt="Shay Franchi">
+            <br><h3>Shay Franchi</h3>
+        </li>
+        <li class="student">
+            <img src="https://media.licdn.com/dms/image/C4D03AQFMo0YT2ibmwQ/profile-displayphoto-shrink_800_800/0/1643194333443?e=1715817600&v=beta&t=RpxuGUtAEbM9sfoy7wowjc81UekhxCNrc16SMUv4cqM" alt="Shahar Linial">
+            <br><h3>Shahar Linial</h3>
+        </li>
+    </ul>
 </body>
 {% endblock %}
 

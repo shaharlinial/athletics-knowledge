@@ -68,7 +68,8 @@ select {
 .country-container {
     display: grid;
     grid-template-columns: repeat(4, 1fr); /* Create four columns */
-    gap: 20px; /* Adjust the space between grid items */
+    gap: 2px; /* Adjust the space between grid items */
+
     margin-bottom: 20px; /* Space below the entire grid */
 }
 
@@ -76,3 +77,25 @@ select {
     display: flex;
     align-items: center; /* Align checkbox and label in the middle */
 }
+    .collapsible {
+        cursor: pointer;
+        padding: 18px;
+        width: 100%;
+        text-align: left;
+        border: none;
+        outline: none;
+        background-color: #f1f1f1;
+    }
+
+    .content {
+        display: none;
+        padding: 0 18px;
+        overflow: hidden;
+        background-color: #f1f1f1;
+        column-count: 4; /* Set the number of columns */
+        column-gap: 2px; /* Adjust the gap between columns */
+    }
+
+    .content div {
+        break-inside: avoid; /* Prevent column breaks within a checkbox and label pair */
+    }

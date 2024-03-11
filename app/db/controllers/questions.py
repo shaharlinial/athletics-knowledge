@@ -1,5 +1,8 @@
+import typing
+
 from . import base_controller
 from .. import entities
+import random
 
 
 class QuestionController(base_controller.BaseController):
@@ -8,7 +11,8 @@ class QuestionController(base_controller.BaseController):
         super().__init__(sql_connection)
 
     def generate_question(self, user_id, country_preferences, sports_preferences,
-                          years_preferences) -> entities.question.Question:
+                          years_preferences) -> typing.Union[entities.question.Question, bool]:
+
         countries = "all countries"
         if len(country_preferences) > 0:
             countries = ",".join([c.name for c in country_preferences])
@@ -21,6 +25,14 @@ class QuestionController(base_controller.BaseController):
 
         try:
             cursor = self.db.connection.cursor()
+            cursor.execute(f"""
+                select count(*) from answers where user_id = {user_id};
+            """)
+            total_answers = cursor.fetchone()
+
+            if total_answers[0] is not None and int(total_answers[0]) == 15:
+                return False
+
             cursor.execute(
                 """
                 select 
@@ -33,7 +45,7 @@ class QuestionController(base_controller.BaseController):
                     '[years]', %s)
                 INTO @question_id, @sql_txt, @sql_question from question_templates
                 where template_id = (select count(*) from answers where user_id = %s) + 1;
-                """ , (user_id, countries, sports, years , user_id)
+                """, (user_id, countries, sports, years, user_id)
             )
             cursor.execute(
                 """
@@ -53,13 +65,13 @@ class QuestionController(base_controller.BaseController):
                 """
             )
             question_id, question_text = cursor.fetchone()
-
-            # TODO: Shuffle Answers
+            correct_answer = answers[0]
+            random.shuffle(answers)
             return entities.question.Question(
                 text=question_text,
                 id=question_id,
                 answers=answers,
-                correct_answer=answers[0]
+                correct_answer=correct_answer
             )
         except Exception:
             raise
@@ -91,7 +103,7 @@ class QuestionController(base_controller.BaseController):
                     '[years]', %s)
                 INTO @question_id, @sql_txt, @sql_question from question_templates
                 where template_id = (select count(*) from answers where user_id = %s) + 1;
-                """ , (user_id, countries, sports, years , user_id)
+                """, (user_id, countries, sports, years, user_id)
             )
             cursor.execute(
                 """

@@ -4,14 +4,14 @@
     <meta charset="UTF-8">
     <meta viewport="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{{ url_for('static', filename='/css/style.css') }}">
-    <title>Flask Application</title>
+    <title>Athletic Knowledge Application</title>
 </head>
-
 
 <body>
 
 <div id="app">
-    <h1>Welcome to the Athletic Knowledge Application</h1>
+    <h1>Athletic Knowledge Application</h1>
+
     <nav>
         <ul>
             <li><a href="/">Home</a></li>
@@ -24,7 +24,22 @@
             <li id="logoutLink" style="display:none;"><a href="/logout">Logout</a></li> <!-- Added logout link -->
         </ul>
     </nav>
+
+    <section>
+        <h2>
+            Test your athletic knowledge with our trivia application! <br> Dive into the rich history of athletics spanning over 120 years.
+        </h2>
+        <div class="image-container">
+
+            <!-- Add a small image with img tags and reference to an online link -->
+            <img src="https://upload.wikimedia.org/wikipedia/commons/9/9c/Pole_Vault_Sequence_3.jpg" alt="Athletics Image">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/1/16/Albert_Meyer_3_Olympia_1896.jpg" alt="Athletics Image">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/94/2013_Australian_Open_-_Guillaume_Rufin.jpg/500px-2013_Australian_Open_-_Guillaume_Rufin.jpg" alt="Athletics Image 3">
+        </div>
+    </section>
+
 </div>
+
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         var userId = "{{ user_id }}";
@@ -37,5 +52,6 @@
         }
     });
 </script>
+
 </body>
 </html>
