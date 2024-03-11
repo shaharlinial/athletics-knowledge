@@ -7,3 +7,4 @@ class Question:
     id: int
     answers: list
     correct_answer: str
+

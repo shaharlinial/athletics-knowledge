@@ -3,6 +3,8 @@ from app.db import controllers
 from flask import jsonify
 from flask import g
 
+from app.db.controllers.user import UserController
+
 
 def get_question():
     # Simulating fetching a question from '/api/question'
@@ -45,10 +47,25 @@ def submit_answer():
                            correct_answer=q.correct_answer, submitted_answer=selected_answer, user_has_answered=True)
 
 
-def end_game():
-    user_score = 100  # User's final score
-    correct_answers_count = 5  # How many answers were correct
-    total_questions = 10  # Total questions answered
+# def end_game():
+#     user_score = 100  # User's final score
+#     correct_answers_count = 5  # How many answers were correct
+#     total_questions = 10  # Total questions answered
+#
+#     return render_template('end_game.html', user_name="John Doe", user_score=user_score,
+#                            correct_answers_count=correct_answers_count, total_questions=total_questions)
 
-    return render_template('end_game.html', user_name="John Doe", user_score=user_score,
+
+def end_game():
+    user_id = session.get('user_id', '')
+    user_controller = UserController(g.db)
+    user = user_controller.fetch_user_by_id(
+        user_id=user_id
+    )
+
+    user_score = user.score  # User's final score
+    correct_answers_count =user_controller.count_user_correct_answers(user_id)    # How many answers were correct
+    total_questions = user_controller.count_user_total_answers(user_id)  # Total questions answered
+
+    return render_template('end_game.html', user_id=user_id, user_name=user.user_name, user_score=user.score,
                            correct_answers_count=correct_answers_count, total_questions=total_questions)
