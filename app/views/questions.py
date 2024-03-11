@@ -63,9 +63,11 @@ def end_game():
         user_id=user_id
     )
 
-    user_score = user.score  # User's final score
+    user_score = user_controller.get_user_score(user_id)  # User's final score
     correct_answers_count =user_controller.count_user_correct_answers(user_id)    # How many answers were correct
     total_questions = user_controller.count_user_total_answers(user_id)  # Total questions answered
 
-    return render_template('end_game.html', user_id=user_id, user_name=user.user_name, user_score=user.score,
+
+    return render_template('end_game.html', user_id=user_id, user_name=user.user_name, user_score=user_score,
                            correct_answers_count=correct_answers_count, total_questions=total_questions)
+
